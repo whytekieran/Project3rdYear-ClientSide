@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 /*ClientEventHandler class implements action listener, this class is responsible for controls that send
  a request to the server for some information*/
@@ -80,6 +81,11 @@ public class ClientEventHandler implements ActionListener
 	private ArrayList<Integer> custIDs;			//List for customer ids from the server
 	private ArrayList<Reminder> remindersList;			//Holds list of reminders from the server
 	public static char staffTypeAuthenticator;
+	private String sHouseType;
+	private String county;						//Hold inputted county name which will be sent to server for searching
+	private Object[][] searchData;				//Used to hold search data for JTables
+	private boolean isValidOperator;			//True is value is =, > or <
+	private boolean isDouble;					//True if value is a double
 	
 	//Array holds column names for staff table
 	String[] staffColumnNames = {"ID",
@@ -90,9 +96,9 @@ public class ClientEventHandler implements ActionListener
 							"Salary",
 							"Employment Type"};
 	//Array holds column names for customer table
-	String[] customerColumnNames = {"CustomerID",
-			"FirstName",
-			"LastName",
+	String[] customerColumnNames = {"Customer ID",
+			"First Name",
+			"Last Name",
 			"Address"};
 	//Array holds column names for house table
 	String[] houseColumnNames = {"ID",
@@ -101,25 +107,50 @@ public class ClientEventHandler implements ActionListener
 							"County",
 							"BuyOrSell"};
 	//Array holds column names for rent transactions table
-	String[] rentTransactionColumnNames = {"RentID",
-			"HouseID",
+	String[] rentTransactionColumnNames = {"Rent ID",
+			"House ID",
 			"StartDate",
 			"EndDate",
 			"MonthlyRate",
-			"EstateAgentID",
-			"CustomerID"};
+			"EstateAgent ID",
+			"Customer ID"};
 	//Array holds column names for buy transactions table
-	String[] buyTransactionColumnNames = {"BuyID",
-			"HouseID",
+	String[] buyTransactionColumnNames = {"Buy ID",
+			"House ID",
 			"Cost",
-			"EstateAgentID",
-			"CustomerID"};
+			"EstateAgent ID",
+			"Customer ID"};
 	//Array holds column names for reminder table
-	String[] reminderColumnNames = {"ReminderID",
+	String[] reminderColumnNames = {"Reminder ID",
 			"Subject",
 			"Description",
 			"Date",
 			"Time"};
+	String[] sellTransCountyColumnNames = {"Buy ID",
+			"Cost",
+			"Agent ID",
+			"Customer ID",
+			"House ID",
+			"HouseStreet",
+			"HouseTown",
+			"HouseCounty"};
+	
+	String[] sellTransCustColumnNames = {"Buy ID",
+			"House ID",
+			"Cost",
+			"Agent ID",
+			"Customer ID",
+			"Cust FName",
+			"Cust LName",
+			"Customer Address"};
+	String[] sellTransAgentColumnNames = {"Buy ID",
+			"House ID",
+			"Cost",
+			"Customer ID",
+			"Agent ID",
+			"Agent FName",
+			"Agent LName",
+			"Agent Address"};
 	
 	/*ClientEventHandler constructor accepts a client object. The custom made client object contains 
 	methods necessary for a client, such as sending messages. It also contains both ObjectOutputStream
@@ -147,7 +178,8 @@ public class ClientEventHandler implements ActionListener
 				 folder*/
 				User authenticatingUser = new User();	//Create user object
 				authenticatingUser.setUsername(ApplicationMainWindow.txtUsername.getText()); //set username
-				authenticatingUser.setPassword(ApplicationMainWindow.txtPassword.getText()); //set password
+				char[] arrayPassword = ApplicationMainWindow.passwordField.getPassword();	//get password as char arry
+				authenticatingUser.setPassword(String.valueOf(arrayPassword)); //set password
 				/*Listhandler gets the index of the item selected from a specific combo box, we can then use
 				 the index to figure out which staff type was selected. Listhandler contains static ints
 				 to hold these indexes*/
@@ -1004,8 +1036,8 @@ public class ClientEventHandler implements ActionListener
 			//if action command is "ShowAllHouses"
 			case "ShowAllHouses":
 				client.sendMessage(24);//send signal to server to indicate what we are doing
-				Object[][] houses;	  //2D array to hold staff members data
-				House houseMember;   //object to hold each retrieved staff member 
+				Object[][] houses;	  //2D array to hold houses data
+				House houseMember;   //object to hold each retrieved houses 
 				
 				houseList = client.getHouseList();	//retrieve array list from server of all the houses
 				
@@ -1578,7 +1610,7 @@ public class ClientEventHandler implements ActionListener
 			case "ViewAllBuyTransaction":
 				client.sendMessage(37);//send server a signal to tell it what we are doing
 				Object[][] buyTransactions;	  //2D array to hold rent transactions data
-				SellableHouse bHouseMember;   //object to hold each retrieved rentable house 
+				SellableHouse bHouseMember;   //object to hold each retrieved buyable house 
 				
 				buyIDs = client.getIDList();
 				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
@@ -2184,6 +2216,895 @@ public class ClientEventHandler implements ActionListener
 							"Invalid Reminder Retreival", JOptionPane.ERROR_MESSAGE);
 				}
 				break;
+				//SEARCH STAFF BY FIRST NAME (CLIENT SIDE)
+				//if action command is "DynamicSearchStaffFName"
+			case "DynamicSearchStaffFName":
+				Object[][] staffFName;	  //2D array to hold staff members data			
+				StaffMember memberFName;   //object to hold each retrieved staff member 
+				
+				String fName = ApplicationMainWindow.txtStaffFirstName.getText();	//get inputted first name
+				client.sendMessage(51);		//send server a signal to tell it what we are doing
+				client.sendMessage(fName);	//send first name used in search to the server
+				
+				members = client.getStaffMemberList();//retrieve array list from server of all the staff members
+				
+				if(members.size() > 0)//if we have members in the array list
+				{
+					staffFName = new Object[members.size()][7];//create array to hold them
+					
+					//loop over entire list of staff members
+					for(int row = 0; row < members.size(); ++row)//loop over each record
+					{
+						memberFName = members.get(row); //get the object
+						
+						staffFName[row][0] = memberFName.getId();				//pass it into an array
+						staffFName[row][1] = memberFName.getFirstName();
+						staffFName[row][2] = memberFName.getLastName();
+						staffFName[row][3] = memberFName.getAddress();
+						staffFName[row][4] = memberFName.getPps();
+						staffFName[row][5] = memberFName.getSalary();
+						staffFName[row][6] = memberFName.getStaffType();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(staffFName, staffColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
+				    tcm.getColumn(0).setPreferredWidth(10);
+				    tcm.getColumn(1).setPreferredWidth(60);
+				    tcm.getColumn(2).setPreferredWidth(60);
+				    tcm.getColumn(3).setPreferredWidth(170);
+				    tcm.getColumn(4).setPreferredWidth(50);
+				    tcm.getColumn(5).setPreferredWidth(50);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Members Have been found" ,
+							"Valid Staff Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Staff Members Have been found" ,
+							"Invalid Staff Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH STAFF BY LAST NAME (CLIENT SIDE)
+				//if action command is "DynamicSearchStaffLName"
+			case "DynamicSearchStaffLName":
+				Object[][] staffLName;	  //2D array to hold staff members data			
+				StaffMember memberLName;   //object to hold each retrieved staff member //was 
+				
+				String LName = ApplicationMainWindow.txtStaffLastName.getText();	//get inputted last name
+				client.sendMessage(52);		//send server a signal to tell it what we are doing
+				client.sendMessage(LName);	//send last name used in search to the server
+				
+				members = client.getStaffMemberList();//retrieve array list from server of all the staff members
+				
+				if(members.size() > 0)//if we have members in the array list
+				{
+					staffLName = new Object[members.size()][7];//create array to hold them
+					
+					//loop over entire list of staff members
+					for(int row = 0; row < members.size(); ++row)//loop over each record
+					{
+						memberLName = members.get(row); //get the object
+						
+						staffLName[row][0] = memberLName.getId();				//pass it into an array
+						staffLName[row][1] = memberLName.getFirstName();
+						staffLName[row][2] = memberLName.getLastName();
+						staffLName[row][3] = memberLName.getAddress();
+						staffLName[row][4] = memberLName.getPps();
+						staffLName[row][5] = memberLName.getSalary();
+						staffLName[row][6] = memberLName.getStaffType();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(staffLName, staffColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
+				    tcm.getColumn(0).setPreferredWidth(10);
+				    tcm.getColumn(1).setPreferredWidth(60);
+				    tcm.getColumn(2).setPreferredWidth(60);
+				    tcm.getColumn(3).setPreferredWidth(170);
+				    tcm.getColumn(4).setPreferredWidth(50);
+				    tcm.getColumn(5).setPreferredWidth(50);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Members Have been found" ,
+							"Valid Staff Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Staff Members Have been found" ,
+							"Invalid Staff Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH STAFF BY EMPLOYMENT TYPE (CLIENT SIDE)
+				//if action command is "DynamicSearchStaffEType"
+			case "DynamicSearchStaffEType":
+				Object[][] staffEmpType;	  //2D array to hold staff members data			
+				StaffMember memberEmpType;   //object to hold each retrieved staff member //was 
+				
+				staffType = getStaffTypeChar(listHandler.getEmpSearchType());//get selected index of combo box and convert it to its staff char representation
+				String empType = String.valueOf(staffType); //convert character to string
+				client.sendMessage(53);		//send server a signal to tell it what we are doing
+				client.sendMessage(empType);	//send emp type used in search to the server
+				
+				members = client.getStaffMemberList();//retrieve array list from server of all the staff members
+				
+				if(members.size() > 0)//if we have members in the array list
+				{
+					staffEmpType = new Object[members.size()][7];//create array to hold them
+					
+					//loop over entire list of staff members
+					for(int row = 0; row < members.size(); ++row)//loop over each record
+					{
+						memberEmpType = members.get(row); //get the object
+						
+						staffEmpType[row][0] = memberEmpType.getId();				//pass it into an array
+						staffEmpType[row][1] = memberEmpType.getFirstName();
+						staffEmpType[row][2] = memberEmpType.getLastName();
+						staffEmpType[row][3] = memberEmpType.getAddress();
+						staffEmpType[row][4] = memberEmpType.getPps();
+						staffEmpType[row][5] = memberEmpType.getSalary();
+						staffEmpType[row][6] = memberEmpType.getStaffType();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(staffEmpType, staffColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
+				    tcm.getColumn(0).setPreferredWidth(10);
+				    tcm.getColumn(1).setPreferredWidth(60);
+				    tcm.getColumn(2).setPreferredWidth(60);
+				    tcm.getColumn(3).setPreferredWidth(170);
+				    tcm.getColumn(4).setPreferredWidth(50);
+				    tcm.getColumn(5).setPreferredWidth(50);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Members Have been found" ,
+							"Valid Staff Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Staff Members Have been found" ,
+							"Invalid Staff Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR ALL RENTABLE HOUSES (CLIENT SIDE)
+				//if action command is "DynamicSearchRentHouse"
+			case "DynamicSearchRentHouse":
+				client.sendMessage(54);//send signal to server to indicate what we are doing
+				Object[][] rentHouses;	  //2D array to hold house data
+				House rentHouseMember;   //object to hold each retrieved house 
+				
+				houseType = getHouseSearchType(listHandler.getHouseSearchType()); 
+				sHouseType = String.valueOf(houseType); //convert character to string
+				client.sendMessage(sHouseType);		//send house type to server for searching
+				
+				houseList = client.getHouseList();	//retrieve array list from server of all the houses
+				
+				if(houseList.size() > 0)//if we have houses in the array list
+				{
+					rentHouses = new Object[houseList.size()][5];//create array to hold them
+					
+					for(int row = 0; row < houseList.size(); ++row)//loop over each record
+					{
+						rentHouseMember = houseList.get(row); //get the object
+						
+						rentHouses[row][0] = rentHouseMember.getId();				//pass it into an array
+						rentHouses[row][1] = rentHouseMember.getStreet();
+						rentHouses[row][2] = rentHouseMember.getTown();
+						rentHouses[row][3] = rentHouseMember.getCounty();
+						rentHouses[row][4] = rentHouseMember.getRentOrSale();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will use house (object) 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(rentHouses, houseColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Houses Have been found" ,
+							"Valid House Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Houses Have been found" ,
+							"Invalid House Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR ALL BUYABLE HOUSES (CLIENT SIDE)
+				//if action command is "DynamicSearchBuyHouse"
+			case "DynamicSearchBuyHouse":
+				client.sendMessage(55);//send signal to server to indicate what we are doing
+				Object[][] buyHouses;	  //2D array to hold house data
+				House buyHouseMember;   //object to hold each retrieved house 
+				
+				houseType = getHouseSearchType(listHandler.getHouseSearchType()); //one method gets the int, the other converts it to the char it represents
+				sHouseType = String.valueOf(houseType); //convert character to string
+				client.sendMessage(sHouseType);		//send house type to server for searching
+				
+				houseList = client.getHouseList();	//retrieve array list from server of all the houses
+				
+				if(houseList.size() > 0)//if we have houses in the array list
+				{
+					buyHouses = new Object[houseList.size()][5];//create array to hold them
+					
+					for(int row = 0; row < houseList.size(); ++row)//loop over each record
+					{
+						buyHouseMember = houseList.get(row); //get the object
+						
+						buyHouses[row][0] = buyHouseMember.getId();				//pass it into an array
+						buyHouses[row][1] = buyHouseMember.getStreet();
+						buyHouses[row][2] = buyHouseMember.getTown();
+						buyHouses[row][3] = buyHouseMember.getCounty();
+						buyHouses[row][4] = buyHouseMember.getRentOrSale();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will use house (object) 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(buyHouses, houseColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Houses Have been found" ,
+							"Valid House Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Houses Have been found" ,
+							"Invalid House Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR HOUSES BY TOWN (CLIENT SIDE)
+				//if action command is "DynamicSearchHouseTown"
+			case "DynamicSearchHouseTown":
+				client.sendMessage(56);//send signal to server to indicate what we are doing
+				Object[][] townHouses;	  //2D array to hold house data
+				House townHouseMember;   //object to hold each retrieved house 
+				
+				String town = ApplicationMainWindow.txtHouseTown.getText(); //get town name that was inputted
+				client.sendMessage(town);		//send town name to the server
+				
+				houseList = client.getHouseList();	//retrieve array list from server of all the houses
+				
+				if(houseList.size() > 0)//if we have houses in the array list
+				{
+					townHouses = new Object[houseList.size()][5];//create array to hold them
+					
+					for(int row = 0; row < houseList.size(); ++row)//loop over each record
+					{
+						townHouseMember = houseList.get(row); //get the object
+						
+						townHouses[row][0] = townHouseMember.getId();				//pass it into an array
+						townHouses[row][1] = townHouseMember.getStreet();
+						townHouses[row][2] = townHouseMember.getTown();
+						townHouses[row][3] = townHouseMember.getCounty();
+						townHouses[row][4] = townHouseMember.getRentOrSale();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will use house (object) 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(townHouses, houseColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Houses Have been found" ,
+							"Valid House Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Houses Have been found" ,
+							"Invalid House Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR HOUSES BY COUNTY (CLIENT SIDE)
+				//if action command is "DynamicSearchHouseTown"
+			case "DynamicSearchHouseCounty":
+				client.sendMessage(57);//send signal to server to indicate what we are doing
+				Object[][] countyHouses;	  //2D array to hold house data
+				House countyHouseMember;   //object to hold each retrieved house 
+				
+				county = ApplicationMainWindow.txtHouseCounty.getText(); //get county name that was inputted
+				client.sendMessage(county);		//send county name to the server
+				
+				houseList = client.getHouseList();	//retrieve array list from server of all the houses
+				
+				if(houseList.size() > 0)//if we have houses in the array list
+				{
+					countyHouses = new Object[houseList.size()][5];//create array to hold them
+					
+					for(int row = 0; row < houseList.size(); ++row)//loop over each record
+					{
+						countyHouseMember = houseList.get(row); //get the object
+						
+						countyHouses[row][0] = countyHouseMember.getId();				//pass it into an array
+						countyHouses[row][1] = countyHouseMember.getStreet();
+						countyHouses[row][2] = countyHouseMember.getTown();
+						countyHouses[row][3] = countyHouseMember.getCounty();
+						countyHouses[row][4] = countyHouseMember.getRentOrSale();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will use house (object) 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(countyHouses, houseColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Houses Have been found" ,
+							"Valid House Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Houses Have been found" ,
+							"Invalid House Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH CUSTOMER BY FIRST NAME (CLIENT SIDE)
+				//if action command is "DynamicSearchCustFName"
+			case "DynamicSearchCustFName":
+				Object[][] customersFName;	  //2D array to hold customers data			
+				Customer customerFName;   //object to hold each retrieved customer
+				
+				String custFName = ApplicationMainWindow.txtCustFName.getText();	//get inputted first name
+				client.sendMessage(58);		//send server a signal to tell it what we are doing
+				client.sendMessage(custFName);	//send first name used in search to the server
+				
+				customersList = client.getCustomerList();//retrieve array list from server of all the customers
+				
+				if(customersList.size() > 0)//if we have members in the array list
+				{
+					customersFName = new Object[customersList.size()][7];//create array to hold them
+					
+					//loop over entire list of customers
+					for(int row = 0; row < customersList.size(); ++row)//loop over each record
+					{
+						customerFName = customersList.get(row); //get the object
+						
+						customersFName[row][0] = customerFName.getCustID();			//pass it into an array
+						customersFName[row][1] = customerFName.getfName();
+						customersFName[row][2] = customerFName.getlName();
+						customersFName[row][3] = customerFName.getAddress();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(customersFName, customerColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Customers Have been found" ,
+							"Valid Customer Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Customers Have been found" ,
+							"Invalid Customer Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH CUSTOMER BY LAST NAME (CLIENT SIDE)
+				//if action command is "DynamicSearchCustFName"
+			case "DynamicSearchCustLName":
+				Object[][] customersLName;	  //2D array to hold customers data			
+				Customer customerLName;   //object to hold each retrieved customer		
+				
+				String custLName = ApplicationMainWindow.txtCustLName.getText();	//get inputted last name
+				client.sendMessage(59);		//send server a signal to tell it what we are doing
+				client.sendMessage(custLName);	//send last name used in search to the server
+				
+				customersList = client.getCustomerList();//retrieve array list from server of all the customers
+				
+				if(customersList.size() > 0)//if we have members in the array list
+				{
+					customersLName = new Object[customersList.size()][7];//create array to hold them
+					
+					//loop over entire list of customers
+					for(int row = 0; row < customersList.size(); ++row)//loop over each record
+					{
+						customerLName = customersList.get(row); //get the object
+						
+						customersLName[row][0] = customerLName.getCustID();			//pass it into an array
+						customersLName[row][1] = customerLName.getfName();
+						customersLName[row][2] = customerLName.getlName();
+						customersLName[row][3] = customerLName.getAddress();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(customersLName, customerColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Customers Have been found" ,
+							"Valid Customer Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Customers Have been found" ,
+							"Invalid Customer Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH CUSTOMER BY ADDRESS (CLIENT SIDE)
+				//if action command is "DynamicSearchCustFName"
+			case "DynamicSearchCustAddress":
+				Object[][] customersAddress;	  //2D array to hold customers data			
+				Customer customerAddress;   //object to hold each retrieved customer		
+				
+				String custAddress = ApplicationMainWindow.txtCustAddress.getText();	//get inputted address
+				client.sendMessage(60);		//send server a signal to tell it what we are doing
+				client.sendMessage(custAddress);	//send address used in search to the server
+				
+				customersList = client.getCustomerList();//retrieve array list from server of all the customers
+				
+				if(customersList.size() > 0)//if we have members in the array list
+				{
+					customersAddress = new Object[customersList.size()][7];//create array to hold them
+					
+					//loop over entire list of customers
+					for(int row = 0; row < customersList.size(); ++row)//loop over each record
+					{
+						customerAddress = customersList.get(row); //get the object
+						
+						customersAddress[row][0] = customerAddress.getCustID();			//pass it into an array
+						customersAddress[row][1] = customerAddress.getfName();
+						customersAddress[row][2] = customerAddress.getlName();
+						customersAddress[row][3] = customerAddress.getAddress();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(customersAddress, customerColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Customers Have been found" ,
+							"Valid Customer Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Customers Have been found" ,
+							"Invalid Customer Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR BUY TRANSACTIONS IN A CERTAIN COUNTY (CLIENT SIDE)
+				//if action command is "DynamicSearchBTransCounty"
+			case "DynamicSearchBTransCounty":		
+				SellableHouse sHouseCounty;   //object to hold each retrieved sellable house (transaction data)
+				House houseCounty;
+				
+				client.sendMessage(61);
+				String county = ApplicationMainWindow.txtTransBuyCounty.getText();
+				client.sendMessage(county);
+				
+				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
+				houseList = client.getHouseList();	//retrieve array list from server of all the houses
+				estateAgentIDs = client.getIDList();//retrieve array list of agent ids from the server
+				custIDs = client.getIDList();//retrieve array list of customer ids from the server
+				
+				if(sHouseList.size() > 0)//if we have members in the array lists
+				{
+					searchData = new Object[sHouseList.size()][8];//create array to hold them
+					
+					//loop over entire lists of data
+					for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+					{
+						sHouseCounty = sHouseList.get(row); //get the objects
+						houseCounty = houseList.get(row);
+						
+						searchData[row][0] = sHouseCounty.getId();					//pass them into an array
+						searchData[row][1] = sHouseCounty.getCost();
+						searchData[row][2] = estateAgentIDs.get(row);
+						searchData[row][3] = custIDs.get(row);	
+						searchData[row][4] = houseCounty.getId();
+						searchData[row][5] = houseCounty.getStreet();
+						searchData[row][6] = houseCounty.getTown();
+						searchData[row][7] = houseCounty.getCounty();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(searchData, sellTransCountyColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Information Has been found" ,
+							"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+							"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR BUY TRANSACTIONS BY COST (>, <, =) (CLIENT SIDE)
+				//if action command is "DynamicSearchBTransCost"
+			case "DynamicSearchBTransCost":
+				client.sendMessage(62);
+				SellableHouse sHouseCost;
+				isValidOperator = false;
+				isDouble = false;
+				
+				String costUnedited = ApplicationMainWindow.txtTransBuyCost.getText();//get inputted value eg =100000
+				String operator = costUnedited.substring(0, 1);//get the operator
+				String cost = costUnedited.substring(1);//get the number after the operator
+				
+				//make sure the user has entered a correct operator as the first character
+				if(operator.equalsIgnoreCase("=") || operator.equalsIgnoreCase("<") || operator.equalsIgnoreCase(">"))
+				{
+					isValidOperator = true;
+				}
+				
+				isDouble = isDouble(cost); //checks the remaining string after the operator is a double
+				
+				if(isValidOperator == true && isDouble == true)//if we have a double and the operator is okay
+				{
+					client.sendMessage(operator);//send them both to the server
+					client.sendMessage(cost);
+					
+					//get lists of data from the server
+					buyIDs = client.getIDList();
+					sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
+					estateAgentIDs = client.getIDList();
+					custIDs = client.getIDList();
+					
+					//if we have members in the array lists
+					if(sHouseList.size() > 0 && buyIDs.size() > 0 && 
+							estateAgentIDs.size() > 0 && custIDs.size() > 0)
+					{
+						searchData = new Object[sHouseList.size()][5];//create array to hold them
+						
+						for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+						{
+							//add each recod to 2D array
+							searchData[row][0] = buyIDs.get(row);
+							sHouseCost = sHouseList.get(row);
+							searchData[row][1] = sHouseCost.getId();
+							searchData[row][2] = sHouseCost.getCost();
+							searchData[row][3] = estateAgentIDs.get(row);
+							searchData[row][4] = custIDs.get(row);
+						}
+						
+						@SuppressWarnings("serial")
+						//Create a table model that does not allow editing, which will use house (object) 2D array
+						//as its data
+						DefaultTableModel model = new DefaultTableModel(searchData,  buyTransactionColumnNames) 
+					    {
+					        public boolean isCellEditable(int rowIndex, int mColIndex) {
+					          return false;
+					        }
+					    };
+					    
+					    //set the tables attributes
+					    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+					    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+					    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+					    ApplicationMainWindow.scr1Results.setSize(800, 500);
+					    ApplicationMainWindow.scr1Results.setVisible(true);
+					    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+					    
+					  //output relevant dialog box
+						JOptionPane.showMessageDialog(null, "Information Has been found" ,
+								"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+								"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "The data you have entered isnt correct - try again" ,
+							"Invalid Data", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR BUY TRANSACTIONS INVOLVING A CERTAIN CUSTOMER (CLIENT SIDE)
+				//if action command is "DynamicSearchBTransCustomer"
+			case "DynamicSearchBTransCustomer":
+				SellableHouse sHouseCustomer;   //object to hold each retrieved sellable house (transaction data)
+				Customer associatedCustomer;	//object to hold associated customer
+				client.sendMessage(63);
+				
+				id = Integer.parseInt(ApplicationMainWindow.txtTransBuyCustomer.getText());
+				
+				client.sendMessage(id);
+				
+				buyIDs = client.getIDList();
+				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
+				customersList = client.getCustomerList();	//retrieve array list from server of all the houses
+				estateAgentIDs = client.getIDList();//retrieve array list of agent ids from the server
+				
+				if(sHouseList.size() > 0)//if we have members in the array lists
+				{
+					searchData = new Object[sHouseList.size()][8];//create array to hold them
+					
+					//loop over entire lists of data
+					for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+					{
+						sHouseCustomer = sHouseList.get(row); //get the objects
+						associatedCustomer = customersList.get(row);
+						
+						searchData[row][0] = buyIDs.get(row);					//pass them into an array
+						searchData[row][1] = sHouseCustomer.getId();
+						searchData[row][2] = sHouseCustomer.getCost();
+						searchData[row][3] = estateAgentIDs.get(row);	
+						searchData[row][4] = associatedCustomer.getCustID();
+						searchData[row][5] = associatedCustomer.getfName();
+						searchData[row][6] = associatedCustomer.getlName();
+						searchData[row][7] = associatedCustomer.getAddress();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(searchData, sellTransCustColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
+				    tcm.getColumn(0).setPreferredWidth(10);
+				    tcm.getColumn(1).setPreferredWidth(10);
+				    tcm.getColumn(2).setPreferredWidth(10);
+				    tcm.getColumn(3).setPreferredWidth(10);
+				    tcm.getColumn(4).setPreferredWidth(10);
+				    tcm.getColumn(5).setPreferredWidth(20);
+				    tcm.getColumn(6).setPreferredWidth(20);
+				    tcm.getColumn(7).setPreferredWidth(170);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Information Has been found" ,
+							"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+							"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR BUY TRANSACTIONS INVOLVING A CERTAIN ESTATE AGENT(CLIENT SIDE)
+				//if action command is "DynamicSearchBTransEAgent"
+			case "DynamicSearchBTransEAgent":
+				SellableHouse sHouseAgent;   //object to hold each retrieved sellable house (transaction data)
+				StaffMember associatedAgent;			//object to hold associated estate agent
+				client.sendMessage(64);
+				
+				id = Integer.parseInt(ApplicationMainWindow.txtTransBuyEstateAgent.getText());
+				
+				client.sendMessage(id);
+				
+				buyIDs = client.getIDList();
+				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
+				custIDs = client.getIDList();	//retrieve array list from server of all the customer ids
+				members = client.getStaffMemberList();  //retrieve array list of staff members from the server
+				
+				if(sHouseList.size() > 0)//if we have members in the array lists
+				{
+					searchData = new Object[sHouseList.size()][8];//create array to hold them
+					
+					//loop over entire lists of data
+					for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+					{
+						sHouseAgent = sHouseList.get(row); //get the objects
+						associatedAgent = members.get(row);
+						
+						searchData[row][0] = buyIDs.get(row);					//pass them into an array
+						searchData[row][1] = sHouseAgent.getId();
+						searchData[row][2] = sHouseAgent.getCost();
+						searchData[row][3] = custIDs.get(row);	
+						searchData[row][4] = associatedAgent.getId();
+						searchData[row][5] = associatedAgent.getFirstName();
+						searchData[row][6] = associatedAgent.getLastName();
+						searchData[row][7] = associatedAgent.getAddress();
+					}
+					
+					@SuppressWarnings("serial")
+					//Create a table model that does not allow editing, which will used staff members 2D array
+					//as its data
+					DefaultTableModel model = new DefaultTableModel(searchData, sellTransAgentColumnNames) 
+				    {
+				        public boolean isCellEditable(int rowIndex, int mColIndex) {
+				          return false;
+				        }
+				    };
+				    
+				    //set the tables attributes
+				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
+				    tcm.getColumn(0).setPreferredWidth(10);
+				    tcm.getColumn(1).setPreferredWidth(10);
+				    tcm.getColumn(2).setPreferredWidth(10);
+				    tcm.getColumn(3).setPreferredWidth(10);
+				    tcm.getColumn(4).setPreferredWidth(10);
+				    tcm.getColumn(5).setPreferredWidth(20);
+				    tcm.getColumn(6).setPreferredWidth(20);
+				    tcm.getColumn(7).setPreferredWidth(170);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+				    ApplicationMainWindow.scr1Results.setSize(800, 500);
+				    ApplicationMainWindow.scr1Results.setVisible(true);
+				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+				  //output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Information Has been found" ,
+							"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+							"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
 		}//end switch
 	}//end actionPerformed()
 	
@@ -2254,6 +3175,25 @@ public class ClientEventHandler implements ActionListener
 		return houseType;
 	}
 	
+	//used for search
+	//Determines if a house is for sale (s) or for rent (r) depending on the index of the choosen combo box
+	public char getHouseSearchType(int type)
+	{
+		char houseType = 'x';
+			
+		switch(type)
+		{
+			case 1:
+				houseType = 'r';
+				break;
+			case 2:
+				houseType = 'b';
+				break;
+		}
+		
+		return houseType;
+	}//end getHouseSearchType()
+		
 	//Determines if a house is for sale 0 or for rent 1 depending on the type of character retrieved
 	public int getHouseTypeInt(char type)
 	{
@@ -2276,4 +3216,18 @@ public class ClientEventHandler implements ActionListener
 	{
 		return staffTypeAuthenticator;
 	}
+	
+	//checks if string is a double value
+	public boolean isDouble(String string) 
+	{
+        try 
+        {
+            Double.parseDouble(string);
+            return true;
+        } 
+        catch (NumberFormatException e) 
+        {
+            return false;
+        }
+    }
 }

@@ -2478,9 +2478,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.lblSearchHouseType.setVisible(false);
 			ApplicationMainWindow.cmbDynamicHouseSearchType.setVisible(false);
 			ApplicationMainWindow.cmbDynamicHouseSearchType.setSelectedIndex(0);
-			ApplicationMainWindow.lblSearchTransactionType.setVisible(false);
-			ApplicationMainWindow.cmbDynamicTransactionSearchType.setVisible(false);
-			ApplicationMainWindow.cmbDynamicTransactionSearchType.setSelectedIndex(0);
 			ApplicationMainWindow.lblSearchCustomerType.setVisible(false);
 			ApplicationMainWindow.cmbDynamicCustomerSearchType.setVisible(false);
 			ApplicationMainWindow.cmbDynamicCustomerSearchType.setSelectedIndex(0);
@@ -2499,9 +2496,35 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.txtHouseCounty.setVisible(false);
 			ApplicationMainWindow.lblSearchCustFName.setVisible(false);
 			ApplicationMainWindow.txtCustFName.setVisible(false);
-			ApplicationMainWindow.btnDynamicSearchCustFName.setVisible(false);
-			ApplicationMainWindow.btnDynamicSearchTransBuy.setVisible(false);
-			ApplicationMainWindow.btnDynamicSearchTransRent.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchCustFName.setVisible(false);	
+			ApplicationMainWindow.lblSearchTransactionType.setVisible(false);
+			ApplicationMainWindow.cmbDynamicTransactionSearchType.setVisible(false);
+			ApplicationMainWindow.lblSearchBuyTransactionType.setVisible(false);
+			ApplicationMainWindow.cmbDynamicBuyTransactionSearchType.setVisible(false);
+			ApplicationMainWindow.lblSearchTransBuyCost.setVisible(false);
+			ApplicationMainWindow.txtTransBuyCost.setVisible(false);
+			ApplicationMainWindow.lblSearchTransBuyCounty.setVisible(false);
+			ApplicationMainWindow.txtTransBuyCounty.setVisible(false);
+			ApplicationMainWindow.lblSearchTransBuyEstateAgent.setVisible(false);
+			ApplicationMainWindow.txtTransBuyEstateAgent.setVisible(false);
+			ApplicationMainWindow.lblSearchTransBuyCost.setVisible(false);
+			ApplicationMainWindow.txtTransBuyCost.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchBuyTransCounty.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchBuyTransCost.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchBuyTransCustomer.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchBuyTransEAgent.setVisible(false);
+			ApplicationMainWindow.lblSearchTransRentCounty.setVisible(false);
+			ApplicationMainWindow.txtTransRentCounty.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchRentTransCounty.setVisible(false);
+			ApplicationMainWindow.lblSearchTransRentRate.setVisible(false);
+			ApplicationMainWindow.txtTransRentRate.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchRentTransRentRate.setVisible(false);
+			ApplicationMainWindow.lblSearchTransRentCustomer.setVisible(false);
+			ApplicationMainWindow.txtTransRentCustomer.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchRentTransCustomer.setVisible(false);
+			ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
+			ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
+			ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
 		}
 	}//end actionPerformed()
 }//end MenuEventHandler class

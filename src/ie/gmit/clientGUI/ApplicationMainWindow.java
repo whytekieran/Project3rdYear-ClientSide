@@ -22,6 +22,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -53,13 +54,14 @@ public class ApplicationMainWindow extends JFrame
 	ClientEventHandler clientHandler = new ClientEventHandler(client);  //Handles connection with server
 	
 	//GUI Objects and variables
+	public static JPasswordField passwordField;
 	public static JPanel pnlAuthentication, pnlCreateNewUser, pnlUpdateUser, pnlDeleteUser, pnlCreateStaffMember,
 						 pnlUpdateStaffMember, pnlDeleteStaffMember,pnlStaffMemberShowArea, pnlUploadFile, pnlDownloadFile,
 						 pnlSendFile, pnlRemoveFile, pnlCreateHouse, pnlUpdateHouse, pnlDeleteHouse, pnlHouseShowArea, pnlViewFile,
 						 pnlCreateTransaction, pnlDeleteTransaction, pnlUpdateTransaction, pnlViewTransaction,
 						 pnlAddCustomer, pnlDeleteCustomer, pnlUpdateCustomer, pnlCustomerShowArea, pnlCreateReminder,
 						 pnlUpdateReminder, pnlDeleteReminder, pnlReminderShowArea, pnlDynamicSearch;
-	public static JTextField txtUsername, txtPassword, txtNewUsername, txtNewPassword, txtOldUsername, txtOldPassword,
+	public static JTextField txtUsername, txtNewUsername, txtNewPassword, txtOldUsername, txtOldPassword,
 							 txtDeleteUsername, txtDeletePassword, txtUpdatedUsername, txtUpdatedPassword, txtNewStaffFirstName,
 							 txtNewStaffLastName, txtNewStaffSalary, txtNewStaffAddress, txtNewStaffPPS, txtStaffIDUser,
 							 txtStaffUpdateID, txtStaffUpdateFirstName, txtStaffUpdateLastName, txtStaffUpdateAddress,
@@ -77,7 +79,9 @@ public class ApplicationMainWindow extends JFrame
 							 txtSearchCustomerEdit, txtSearchCustomer, txtTransUpdateHouseRentID, txtTransUpdateBuyHouseID, txtCreateReminderDate,
 							 txtCreateReminderTime, txtCreateReminderDesc, txtCreateReminderSubject, txtUpdateReminderDate, txtUpdateReminderTime,
 							 txtUpdateReminderSubject, txtUpdateReminderDesc, txtSearchReminderEdit, txtDeleteReminder, txtSearchReminder,
-							 txtStaffFirstName, txtStaffLastName, txtHouseTown, txtHouseCounty, txtCustFName, txtCustLName, txtCustAddress; 				 
+							 txtStaffFirstName, txtStaffLastName, txtHouseTown, txtHouseCounty, txtCustFName, txtCustLName, txtCustAddress,
+							 txtTransBuyCounty, txtTransBuyCost, txtTransBuyCustomer, txtTransBuyEstateAgent, txtTransRentCounty, txtTransRentRate,
+							 txtTransRentCustomer, txtTransRentEstateAgent; 				 
 	private JLabel lblUsername, lblPassword, lblNewUsername, lblNewPassword, lblOldUsername, lblOldPassword, lblDeleteUsername,
 				   lblDeletePassword, lblUserType, lblUserTypes, lblOldStaffType, lblNewStaffType, lblDeleteStaffType,
 				   lblStaffFirstName,lblStaffLastName, lblStaffAddress, lblStaffPPS, lblStaffSalary, lblStaffEmpType,
@@ -89,7 +93,7 @@ public class ApplicationMainWindow extends JFrame
 				   lblNewCustomerNameF, lblNewCustomerNameL, lblNewCustomerAddress, lblCustomerUpdateFirstName, lblCustomerUpdateLastName,
 				   lblCustomerUpdateAddress, lblCreateReminderDate, lblCreateReminderTime, lblUpdateReminderDate, lblUpdateReminderTime,
 				   lblUpdateReminderSubject, lblUpdateReminderDesc;
-	public static JTable tblShowStaff, tblShowHouses, tblShowRentTransactions, tblShowCustomer, tblShowReminder;
+	public static JTable tblShowStaff, tblShowHouses, tblShowRentTransactions, tblShowCustomer, tblShowReminder, tblShowDynamicResult;
     public static JLabel lblViewStaffMember, lblEnterIDStaff, lblUsernameSendFile, lblCompPathSendFile, lblUsernameSendFileO,
     					 lblOnlineNameSendFile, lblEnterIDHouse, lblViewHouses, lblTransRentHouseID, lblTransStartDate, lblTransEndDate,
     					 lblTransMonthlyRate, lblRentEstateAgentID, lblBuyEstateAgentID, lblBuyCost,lblTransBuyHouseID,
@@ -100,14 +104,17 @@ public class ApplicationMainWindow extends JFrame
     					 lblTransUpdateHouseRentID, lblTransUpdateBuyHouseID, lblCreateReminderSubject, lblCreateReminderDesc, lblEnterIDReminder,
     					 lblDeleteReminder, lblViewReminder, lblSearchEntity, lblSearchStaffType, lblSearchHouseType, lblSearchTransactionType,
     					 lblSearchCustomerType, lblSearchStaffFName, lblSearchStaffLName, lblSearchStaffEmp, lblSearchHouseTown, lblSearchHouseCounty,
-    					 lblSearchCustFName, lblSearchCustLName, lblSearchCustAddress;
+    					 lblSearchCustFName, lblSearchCustLName, lblSearchCustAddress, lblSearchBuyTransactionType, lblSearchTransBuyCounty,
+    					 lblSearchTransBuyCost, lblSearchTransBuyCustomer, lblSearchTransBuyEstateAgent, lblSearchRentTransactionType,
+    					 lblSearchTransRentCounty, lblSearchTransRentRate, lblSearchTransRentCustomer, lblSearchTransRentEstateAgent;
     public static JTextArea showAllStaff, showAllFiles, showSendableFiles, showAllRemoveableFiles, showAllHouses, showFiles,
     						showAllTransactions, showAllCustomers, showAllReminder, showAllResults;
 	public static JComboBox<String> cmbStaffLoginOptions, cmbCreateUserOptions, cmbUpdateUserOldType, cmbUpdateUserNewType,
 									cmbDeleteUserType, cmbCreateStaffOptions, cmbUpdateStaffOptions, cmbSendFileOptions,
 									cmbCreateHouseOptions, cmbUpdateHouseOptions, cmbTransactionOptions, cmbDeleteTransactionOptions,
 									cmbTransactionUpdateOptions, cmbTransactionViewOptions, cmbDynamicSearchEntities, cmbDynamicStaffSearchType,
-									cmbDynamicHouseSearchType, cmbDynamicTransactionSearchType, cmbDynamicCustomerSearchType, cmbStaffSearchEmpType;
+									cmbDynamicHouseSearchType, cmbDynamicTransactionSearchType, cmbDynamicCustomerSearchType, cmbStaffSearchEmpType,
+									cmbDynamicBuyTransactionSearchType, cmbDynamicRentTransactionSearchType;
 	private JButton btnEnterButton, btnExitButton, btnCreateUser, btnEndCreateUser, btnUpdateUser, btnEndUpdateUser,
 					btnDeleteUser, btnCancelDeleteUser, btnCreateStaff, btnCancelCreateStaff, btnDeleteStaffMember,
 					btnCancelDeleteStaffMember, btnExitUpdateStaff, btnUploadFile, btnCancelUploadFile, btnViewFiles,
@@ -115,8 +122,7 @@ public class ApplicationMainWindow extends JFrame
 					btnCancelRemoveFile, btnCreateHouse, btnCancelCreateHouse, btnDeleteHouse, btnCancelDeleteHouse,
 					btnCancelUpdateHouse, btnViewAllFiles, btnCancelViewFile, btnCancelCreateTransaction, btnCancelDeleteTransaction,
 					btnCancelUpdateTransaction, btnCreateCustomer, btnCancelCreateCustomer, btnExitUpdateCustomer,
-					btnCreateReminder, btnCancelCreateReminder, btnCancelUpdateReminder;
-	private JButton btnCancelDynamicSearch;
+					btnCreateReminder, btnCancelCreateReminder, btnCancelUpdateReminder, btnCancelDynamicSearch;
     public static JButton btnShowAllStaff, btnSearchForStaff, btnUpdateStaffMember, btnSearchStaffEdit,  
     				      btnCancelShowAllStaff, btnViewSendableFiles, btnSendCompFile, btnSendOnlineFile,
     				      btnSearchHouseEdit, btnUpdateHouse, btnShowAllHouses, btnSearchForHouse, btnCancelShowHouses,
@@ -129,18 +135,22 @@ public class ApplicationMainWindow extends JFrame
     				      btnRefreshReminderEdit, btnDeleteReminder, btnCancelDeleteReminder, btnShowAllReminder, btnCancelShowReminder,
     				      btnSearchForReminder, btnDynamicSearchStaffFName, btnDynamicSearchStaffLName, btnDynamicSearchStaffEType, 
     				      btnDynamicSearchHouseRent, btnDynamicSearchHouseBuy, btnDynamicSearchHouseTown, btnDynamicSearchHouseCounty,
-    				      btnDynamicSearchTransBuy, btnDynamicSearchTransRent, btnDynamicSearchCustFName, btnDynamicSearchCustLName,
-    				      btnDynamicSearchCustAddress, btnUpdateReminder;
+    				      btnDynamicSearchCustFName, btnDynamicSearchCustLName, btnDynamicSearchCustAddress, btnUpdateReminder,
+    				      btnDynamicSearchBuyTransCounty, btnDynamicSearchBuyTransCost, btnDynamicSearchBuyTransCustomer,
+    				      btnDynamicSearchBuyTransEAgent, btnDynamicSearchRentTransCounty, btnDynamicSearchRentTransRentRate,
+    				      btnDynamicSearchRentTransCustomer, btnDynamicSearchRentTransEAgent;
 	public static JScrollPane scr1Staff, scrlFiles, scrlSendbleFiles, scrlRemovableFiles, scr1House, scrlAllFiles,
 							  scr1Transactions, scr1Customer, scr1Reminder, scr1Results;
 	//String arrays for drop down list options
 	private String[] userTypeChoices = {"Administrative", "Management", "Estate Agent"};
 	private String[] sendFileChoices = {"Choose...","From Online Directory", "From Computer"};
 	private String[] houseChoices = {"Choose...","Buy", "Rent"};
-	private String[] entitySearchChoices = {"Choose...","Staff", "House", "Transactions", "Customer"};
+	private String[] entitySearchChoices = {"Choose...","Staff", "House", "Customer", "Transactions"};
 	private String[] staffSearchChoices = {"Choose...","First Name", "Last Name", "Employment Type"};
 	private String[] customerSearchChoices = {"Choose...","First Name", "Last Name", "Address"};
 	private String[] houseSearchChoices = {"Choose...", "Rent Houses", "Buy Houses", "Town", "County"};
+	private String[] sellTransChoices = {"Choose...", "Find by County", "Find by Cost", "Find by Customer", "Find by Estate Agent"};
+	private String[] rentTransChoices = {"Choose...", "Find by County", "Find by Monthly Rate", "Find by Customer", "Find by Estate Agent"};
 	//Custom made fonts for controls
 	private Font customFont1 = new Font("Sans Serif", Font.BOLD, 15);
 	private Font customFont2 = new Font("Verdana", Font.BOLD, 30);
@@ -248,10 +258,10 @@ public class ApplicationMainWindow extends JFrame
 	    lblPassword.setForeground(Color.decode("#BE81F7"));		//set labels foreground colour
 		pnlAuthentication.add(lblPassword);
 		
-		txtPassword = new JTextField();
-		txtPassword.setLocation(260, 90);						//set location of textfield
-		txtPassword.setSize(165, 30);							//set textfields size
-		pnlAuthentication.add(txtPassword);					    //add textfield to the panel
+		passwordField = new JPasswordField();
+		passwordField.setLocation(260, 90);									//set location of textfield
+		passwordField.setSize(165, 30);										//set textfields size
+		pnlAuthentication.add(passwordField);					    		//add textfield to the panel
 		
 		lblUserType = new JLabel("Select a user type: ");
 		lblUserType.setLocation(60, 140);						//set the label location
@@ -3065,24 +3075,24 @@ public class ApplicationMainWindow extends JFrame
 		
 		//staff search buttons
 		btnDynamicSearchStaffFName = new JButton("Search By First Name");				//button to search by staff first name
-		//btnDynamicSearchStaffFName.setActionCommand("DynamicSearchStaffFName");		//action command for button
-		//btnDynamicSearchStaffFName.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchStaffFName.setActionCommand("DynamicSearchStaffFName");		//action command for button
+		btnDynamicSearchStaffFName.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchStaffFName.setLocation(84, 250);									//location, size, visibility 
 		btnDynamicSearchStaffFName.setSize(200, 31);
 		btnDynamicSearchStaffFName.setVisible(false);
 		pnlDynamicSearch.add(btnDynamicSearchStaffFName);								//add button to panel
 		
 		btnDynamicSearchStaffLName = new JButton("Search By Last Name");				//button to search by staff last name
-		//btnDynamicSearchStaffLName.setActionCommand("DynamicSearchStaffLName");		//action command for button
-		//btnDynamicSearchStaffLName.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchStaffLName.setActionCommand("DynamicSearchStaffLName");		//action command for button
+		btnDynamicSearchStaffLName.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchStaffLName.setLocation(84, 250);									//location, size, visibility 
 		btnDynamicSearchStaffLName.setSize(200, 31);
 		btnDynamicSearchStaffLName.setVisible(false);
 		pnlDynamicSearch.add(btnDynamicSearchStaffLName);								//add button to panel
 		
 		btnDynamicSearchStaffEType = new JButton("Search By Employee Type");			//button to search by staff employment type
-		//btnDynamicSearchStaffEType.setActionCommand("DynamicSearchStaffEType");		//action command for button
-		//btnDynamicSearchStaffEType.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchStaffEType.setActionCommand("DynamicSearchStaffEType");		//action command for button
+		btnDynamicSearchStaffEType.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchStaffEType.setLocation(84, 250);									//location, size, visibility 
 		btnDynamicSearchStaffEType.setSize(200, 31);
 		btnDynamicSearchStaffEType.setVisible(false);
@@ -3109,16 +3119,16 @@ public class ApplicationMainWindow extends JFrame
 		
 		//house search buttons
 		btnDynamicSearchHouseRent = new JButton("Search Rentable Houses");		//button to search by houses for rent
-		//btnDynamicSearchHouseRent.setActionCommand("DynamicSearchRentHouse");		//action command for button
-		//btnDynamicSearchHouseRent.addActionListener(clientHandler);				//event listener
+		btnDynamicSearchHouseRent.setActionCommand("DynamicSearchRentHouse");		//action command for button
+		btnDynamicSearchHouseRent.addActionListener(clientHandler);				//event listener
 		btnDynamicSearchHouseRent.setLocation(84, 190);								//location, size, visibility 
 		btnDynamicSearchHouseRent.setSize(200, 31);
 		btnDynamicSearchHouseRent.setVisible(false);
 		pnlDynamicSearch.add(btnDynamicSearchHouseRent);							//add button to panel
 		
 		btnDynamicSearchHouseBuy = new JButton("Search Buyable Houses");		    //button to search by houses for rent
-		//btnDynamicSearchHouseBuy.setActionCommand("DynamicSearchBuyHouse");		//action command for button
-		//btnDynamicSearchHouseBuy.addActionListener(clientHandler);				//event listener
+		btnDynamicSearchHouseBuy.setActionCommand("DynamicSearchBuyHouse");		//action command for button
+		btnDynamicSearchHouseBuy.addActionListener(clientHandler);				//event listener
 		btnDynamicSearchHouseBuy.setLocation(84, 190);								//location, size, visibility 
 		btnDynamicSearchHouseBuy.setSize(200, 31);
 		btnDynamicSearchHouseBuy.setVisible(false);
@@ -3140,8 +3150,8 @@ public class ApplicationMainWindow extends JFrame
 		pnlDynamicSearch.add(txtHouseTown);						//add text field to panel
 		
 		btnDynamicSearchHouseTown = new JButton("Search House By Town");		        //button to search by houses by town
-		//btnDynamicSearchHouseTown.setActionCommand("DynamicSearchHouseTown");		//action command for button
-		//btnDynamicSearchHouseTown.addActionListener(clientHandler);				//event listener
+		btnDynamicSearchHouseTown.setActionCommand("DynamicSearchHouseTown");		//action command for button
+		btnDynamicSearchHouseTown.addActionListener(clientHandler);				//event listener
 		btnDynamicSearchHouseTown.setLocation(84, 250);								//location, size, visibility 
 		btnDynamicSearchHouseTown.setSize(200, 31);
 		btnDynamicSearchHouseTown.setVisible(false);
@@ -3163,48 +3173,12 @@ public class ApplicationMainWindow extends JFrame
 		pnlDynamicSearch.add(txtHouseCounty);						//add text field to panel
 		
 		btnDynamicSearchHouseCounty = new JButton("Search House By County");		    //button to search by houses by county
-		//btnDynamicSearchHouseCounty.setActionCommand("DynamicSearchHouseCounty");		//action command for button
-		//btnDynamicSearchHouseCounty.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchHouseCounty.setActionCommand("DynamicSearchHouseCounty");		//action command for button
+		btnDynamicSearchHouseCounty.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchHouseCounty.setLocation(84, 250);								//location, size, visibility 
 		btnDynamicSearchHouseCounty.setSize(200, 31);
 		btnDynamicSearchHouseCounty.setVisible(false);
 		pnlDynamicSearch.add(btnDynamicSearchHouseCounty);							    //add button to panel
-		
-		//Transaction Search options
-		//Search label for combobox below
-		lblSearchTransactionType = new JLabel("Search on what type of transaction: ");		//label
-		lblSearchTransactionType.setLocation(80, 105);											//size, location, visibility
-		lblSearchTransactionType.setSize(240, 31);
-		lblSearchTransactionType.setFont(customFont6);										//set the labels font
-		lblSearchTransactionType.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
-		lblSearchTransactionType.setVisible(false);
-		pnlDynamicSearch.add(lblSearchTransactionType);										//add label to the panel
-						
-		//Combobox to pick type of transaction search wanted
-		cmbDynamicTransactionSearchType = new JComboBox<String>(houseChoices);	//Create a combo box for transaction search type
-		cmbDynamicTransactionSearchType.setSize(300, 30);						//set its size
-		cmbDynamicTransactionSearchType.setLocation(40, 140);					//set its location
-		cmbDynamicTransactionSearchType.setMaximumRowCount(5);				//Set max rows	
-		cmbDynamicTransactionSearchType.addItemListener(listHandler);			//add an event handler for the combo box
-		cmbDynamicTransactionSearchType.setVisible(false);						//set combo box visible to true
-		pnlDynamicSearch.add(cmbDynamicTransactionSearchType);				//add combo box to the panel
-		
-		//transaction search buttons
-		btnDynamicSearchTransBuy = new JButton("Search Buy Transactions");		    //button to search by buy transactions
-		//btnDynamicSearchTransBuy.setActionCommand("DynamicSearchTransBuy");		//action command for button
-		//btnDynamicSearchTransBuy.addActionListener(clientHandler);				//event listener
-		btnDynamicSearchTransBuy.setLocation(84, 180);								//location, size, visibility 
-		btnDynamicSearchTransBuy.setSize(200, 31);
-		btnDynamicSearchTransBuy.setVisible(false);
-		pnlDynamicSearch.add(btnDynamicSearchTransBuy);							    //add button to panel
-		
-		btnDynamicSearchTransRent = new JButton("Search Rent Transactions");		    //button to search by buy transactions
-		//btnDynamicSearchTransRent.setActionCommand("DynamicSearchTransRent");		//action command for button
-		//btnDynamicSearchTransRent.addActionListener(clientHandler);				//event listener
-		btnDynamicSearchTransRent.setLocation(84, 180);								//location, size, visibility 
-		btnDynamicSearchTransRent.setSize(200, 31);
-		btnDynamicSearchTransRent.setVisible(false);
-		pnlDynamicSearch.add(btnDynamicSearchTransRent);							    //add button to panel
 		
 		//Customer options
 		//Search label for combobox below
@@ -3241,11 +3215,12 @@ public class ApplicationMainWindow extends JFrame
 		pnlDynamicSearch.add(txtCustFName);						//add text field to panel
 				
 		btnDynamicSearchCustFName = new JButton("Search First Name");		    //button to search by houses by county
-		//btnDynamicSearchCustFName.setActionCommand("DynamicSearchCustFName");		//action command for button
-		//btnDynamicSearchCustFName.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchCustFName.setActionCommand("DynamicSearchCustFName");		//action command for button
+		btnDynamicSearchCustFName.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchCustFName.setLocation(84, 250);								//location, size, visibility 
 		btnDynamicSearchCustFName.setSize(200, 31);
 		btnDynamicSearchCustFName.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchCustFName);					//add button to the panel	
 		
 		//customer search by last name
 		lblSearchCustLName = new JLabel("Enter Customer Last Name: ");						//label
@@ -3263,11 +3238,12 @@ public class ApplicationMainWindow extends JFrame
 		pnlDynamicSearch.add(txtCustLName);						//add text field to panel
 						
 		btnDynamicSearchCustLName = new JButton("Search Last Name");		    //button to search by houses by county
-		//btnDynamicSearchCustLName.setActionCommand("DynamicSearchCustLName");		//action command for button
-		//btnDynamicSearchCustLName.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchCustLName.setActionCommand("DynamicSearchCustLName");		//action command for button
+		btnDynamicSearchCustLName.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchCustLName.setLocation(84, 250);								//location, size, visibility 
 		btnDynamicSearchCustLName.setSize(200, 31);
 		btnDynamicSearchCustLName.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchCustLName);					//add button to the panel	
 		
 		//customer search by address
 		lblSearchCustAddress = new JLabel("Enter Customer Address: ");						//label
@@ -3284,16 +3260,254 @@ public class ApplicationMainWindow extends JFrame
 		txtCustAddress.setVisible(false);
 		pnlDynamicSearch.add(txtCustAddress);						//add text field to panel
 								
-		btnDynamicSearchCustAddress = new JButton("Search Address");		    //button to search by houses by county
-		//btnDynamicSearchCustAddress.setActionCommand("DynamicSearchCustAddress");		//action command for button
-		//btnDynamicSearchCustAddress.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchCustAddress = new JButton("Search Address");		    //button to search by customers by addresss
+		btnDynamicSearchCustAddress.setActionCommand("DynamicSearchCustAddress");		//action command for button
+		btnDynamicSearchCustAddress.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchCustAddress.setLocation(84, 250);								//location, size, visibility 
 		btnDynamicSearchCustAddress.setSize(200, 31);
 		btnDynamicSearchCustAddress.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchCustAddress);					//add button to the panel	
+		
+		//Transaction Search options
+		//Search label for combobox below
+		lblSearchTransactionType = new JLabel("Search on what type of transaction: ");		//label
+		lblSearchTransactionType.setLocation(80, 105);											//size, location, visibility
+		lblSearchTransactionType.setSize(240, 31);
+		lblSearchTransactionType.setFont(customFont6);										//set the labels font
+		lblSearchTransactionType.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransactionType.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransactionType);										//add label to the panel
+								
+		//Combobox to pick type of transaction search wanted
+		cmbDynamicTransactionSearchType = new JComboBox<String>(houseChoices);	//Create a combo box for transaction search type
+		cmbDynamicTransactionSearchType.setSize(300, 30);						//set its size
+		cmbDynamicTransactionSearchType.setLocation(40, 140);					//set its location
+		cmbDynamicTransactionSearchType.setMaximumRowCount(5);				//Set max rows	
+		cmbDynamicTransactionSearchType.addItemListener(listHandler);			//add an event handler for the combo box
+		cmbDynamicTransactionSearchType.setVisible(false);						//set combo box visible to true
+		pnlDynamicSearch.add(cmbDynamicTransactionSearchType);				//add combo box to the panel
+		
+		//buy transaction option for search
+		lblSearchBuyTransactionType = new JLabel("Search buy transactions: ");					//label
+		lblSearchBuyTransactionType.setLocation(80, 180);											//size, location, visibility
+		lblSearchBuyTransactionType.setSize(240, 31);
+		lblSearchBuyTransactionType.setFont(customFont6);										//set the labels font
+		lblSearchBuyTransactionType.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchBuyTransactionType.setVisible(false);
+		pnlDynamicSearch.add(lblSearchBuyTransactionType);										//add label to the panel
+		
+		cmbDynamicBuyTransactionSearchType = new JComboBox<String>(sellTransChoices);	//Create a combo box for sell transaction search type
+		cmbDynamicBuyTransactionSearchType.setSize(300, 30);							//set its size
+		cmbDynamicBuyTransactionSearchType.setLocation(40, 215);						//set its location
+		cmbDynamicBuyTransactionSearchType.setMaximumRowCount(5);						//Set max rows	
+		cmbDynamicBuyTransactionSearchType.addItemListener(listHandler);				//add an event handler for the combo box
+		cmbDynamicBuyTransactionSearchType.setVisible(false);							//set combo box visible to true
+		pnlDynamicSearch.add(cmbDynamicBuyTransactionSearchType);						//add combo box to the panel
+		
+		//buy transaction search by county
+		lblSearchTransBuyCounty = new JLabel("Enter County Name: ");							//label
+		lblSearchTransBuyCounty.setLocation(120, 255);											//size, location, visibility
+		lblSearchTransBuyCounty.setSize(240, 31);
+		lblSearchTransBuyCounty.setFont(customFont6);											//set the labels font
+		lblSearchTransBuyCounty.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransBuyCounty.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransBuyCounty);											//add label to the panel
+														
+		txtTransBuyCounty = new JTextField();							//text field to accept search by transaction county
+		txtTransBuyCounty.setLocation(85, 285);							//size, location and visibility
+		txtTransBuyCounty.setSize(200, 31);
+		txtTransBuyCounty.setVisible(false);
+		pnlDynamicSearch.add(txtTransBuyCounty);						//add text field to panel
+		
+		btnDynamicSearchBuyTransCounty = new JButton("Search By County");		    //button to search by buy transactions by county
+		btnDynamicSearchBuyTransCounty.setActionCommand("DynamicSearchBTransCounty");		//action command for button
+		btnDynamicSearchBuyTransCounty.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchBuyTransCounty.setLocation(85, 325);								//location, size, visibility 
+		btnDynamicSearchBuyTransCounty.setSize(200, 31);
+		btnDynamicSearchBuyTransCounty.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchBuyTransCounty);					//add button to the panel
+		
+		//buy transaction search by cost
+		lblSearchTransBuyCost = new JLabel("Enter Cost (add =, <, or > before number): ");										//label
+		lblSearchTransBuyCost.setLocation(50, 255);											//size, location, visibility
+		lblSearchTransBuyCost.setSize(280, 31);
+		lblSearchTransBuyCost.setFont(customFont6);											//set the labels font
+		lblSearchTransBuyCost.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransBuyCost.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransBuyCost);											//add label to the panel
+																
+		txtTransBuyCost = new JTextField();							//text field to accept search by transaction cost
+		txtTransBuyCost.setLocation(85, 285);							//size, location and visibility
+		txtTransBuyCost.setSize(200, 31);
+		txtTransBuyCost.setVisible(false);
+		pnlDynamicSearch.add(txtTransBuyCost);						//add text field to panel
+		
+		btnDynamicSearchBuyTransCost = new JButton("Search By Cost");		    //button to search by buy transactions by cost
+		btnDynamicSearchBuyTransCost.setActionCommand("DynamicSearchBTransCost");		//action command for button
+		btnDynamicSearchBuyTransCost.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchBuyTransCost.setLocation(85, 325);								//location, size, visibility 
+		btnDynamicSearchBuyTransCost.setSize(200, 31);
+		btnDynamicSearchBuyTransCost.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchBuyTransCost);					//add button to the panel
+		
+		//buy transaction search by customer
+		lblSearchTransBuyCustomer = new JLabel("Enter Customer ID: ");										//label
+		lblSearchTransBuyCustomer.setLocation(125, 255);											//size, location, visibility
+		lblSearchTransBuyCustomer.setSize(240, 31);
+		lblSearchTransBuyCustomer.setFont(customFont6);											//set the labels font
+		lblSearchTransBuyCustomer.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransBuyCustomer.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransBuyCustomer);											//add label to the panel
+																		
+		txtTransBuyCustomer = new JTextField();							//text field to accept search by transaction cost
+		txtTransBuyCustomer.setLocation(85, 285);							//size, location and visibility
+		txtTransBuyCustomer.setSize(200, 31);
+		txtTransBuyCustomer.setVisible(false);
+		pnlDynamicSearch.add(txtTransBuyCustomer);						//add text field to panel
+		
+		btnDynamicSearchBuyTransCustomer = new JButton("Search By Customer");		    		//button to search by buy transactions by customer
+		btnDynamicSearchBuyTransCustomer.setActionCommand("DynamicSearchBTransCustomer");		//action command for button
+		btnDynamicSearchBuyTransCustomer.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchBuyTransCustomer.setLocation(85, 325);									//location, size, visibility 
+		btnDynamicSearchBuyTransCustomer.setSize(200, 31);
+		btnDynamicSearchBuyTransCustomer.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchBuyTransCustomer);									//add button to the panel
+		
+		//buy transaction search by estate agent
+		lblSearchTransBuyEstateAgent = new JLabel("Enter Estate Agent ID: ");										//label
+		lblSearchTransBuyEstateAgent.setLocation(115, 255);											//size, location, visibility
+		lblSearchTransBuyEstateAgent.setSize(240, 31);
+		lblSearchTransBuyEstateAgent.setFont(customFont6);											//set the labels font
+		lblSearchTransBuyEstateAgent.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransBuyEstateAgent.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransBuyEstateAgent);											//add label to the panel
+																				
+		txtTransBuyEstateAgent = new JTextField();							//text field to accept search by transaction cost
+		txtTransBuyEstateAgent.setLocation(85, 285);							//size, location and visibility
+		txtTransBuyEstateAgent.setSize(200, 31);
+		txtTransBuyEstateAgent.setVisible(false);
+		pnlDynamicSearch.add(txtTransBuyEstateAgent);						//add text field to panel
+		
+		btnDynamicSearchBuyTransEAgent = new JButton("Search By Estate Agent");		    		//button to search by buy transactions by customer
+		btnDynamicSearchBuyTransEAgent.setActionCommand("DynamicSearchBTransEAgent");		//action command for button
+		btnDynamicSearchBuyTransEAgent.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchBuyTransEAgent.setLocation(85, 325);									//location, size, visibility 
+		btnDynamicSearchBuyTransEAgent.setSize(200, 31);
+		btnDynamicSearchBuyTransEAgent.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchBuyTransEAgent);									//add button to the panel
+		
+		//rent transaction option for search
+		lblSearchRentTransactionType = new JLabel("Search rent transactions: ");					//label
+		lblSearchRentTransactionType.setLocation(80, 180);											//size, location, visibility
+		lblSearchRentTransactionType.setSize(240, 31);
+		lblSearchRentTransactionType.setFont(customFont6);										//set the labels font
+		lblSearchRentTransactionType.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchRentTransactionType.setVisible(false);
+		pnlDynamicSearch.add(lblSearchRentTransactionType);										//add label to the panel
+				
+		cmbDynamicRentTransactionSearchType = new JComboBox<String>(rentTransChoices);	//Create a combo box for rent transaction search type
+		cmbDynamicRentTransactionSearchType.setSize(300, 30);							//set its size
+		cmbDynamicRentTransactionSearchType.setLocation(40, 215);						//set its location
+		cmbDynamicRentTransactionSearchType.setMaximumRowCount(5);						//Set max rows	
+		cmbDynamicRentTransactionSearchType.addItemListener(listHandler);				//add an event handler for the combo box
+		cmbDynamicRentTransactionSearchType.setVisible(false);							//set combo box visible to true
+		pnlDynamicSearch.add(cmbDynamicRentTransactionSearchType);						//add combo box to the panel
+		
+		//rent transaction search by county
+		lblSearchTransRentCounty = new JLabel("Enter County Name: ");							//label
+		lblSearchTransRentCounty.setLocation(120, 255);											//size, location, visibility
+		lblSearchTransRentCounty.setSize(240, 31);
+		lblSearchTransRentCounty.setFont(customFont6);											//set the labels font
+		lblSearchTransRentCounty.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransRentCounty.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransRentCounty);											//add label to the panel
+																
+		txtTransRentCounty = new JTextField();							//text field to accept search by transaction county
+		txtTransRentCounty.setLocation(85, 285);							//size, location and visibility
+		txtTransRentCounty.setSize(200, 31);
+		txtTransRentCounty.setVisible(false);
+		pnlDynamicSearch.add(txtTransRentCounty);						//add text field to panel
+				
+		btnDynamicSearchRentTransCounty = new JButton("Search By County");		    //button to search by rent transactions by county
+		//btnDynamicSearchRentTransCounty.setActionCommand("DynamicSearchRTransCounty");		//action command for button
+		//btnDynamicSearchRentTransCounty.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransCounty.setLocation(85, 325);								//location, size, visibility 
+		btnDynamicSearchRentTransCounty.setSize(200, 31);
+		btnDynamicSearchRentTransCounty.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchRentTransCounty);					//add button to the panel
+		
+		//rent transaction search by monthly rate
+		lblSearchTransRentRate = new JLabel("Enter Monthly Rate: ");										//label
+		lblSearchTransRentRate.setLocation(135, 255);											//size, location, visibility
+		lblSearchTransRentRate.setSize(240, 31);
+		lblSearchTransRentRate.setFont(customFont6);											//set the labels font
+		lblSearchTransRentRate.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransRentRate.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransRentRate);											//add label to the panel
+																		
+		txtTransRentRate = new JTextField();							//text field to accept search by transaction rent rate
+		txtTransRentRate.setLocation(85, 285);							//size, location and visibility
+		txtTransRentRate.setSize(200, 31);
+		txtTransRentRate.setVisible(false);
+		pnlDynamicSearch.add(txtTransRentRate);						//add text field to panel
+				
+		btnDynamicSearchRentTransRentRate = new JButton("Search By Rate");		    //button to search by rent transactions by rate
+		//btnDynamicSearchBuyTransRentRate.setActionCommand("DynamicSearchRTransRentRate");		//action command for button
+		//btnDynamicSearchBuyTransRentRate.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransRentRate.setLocation(85, 325);								//location, size, visibility 
+		btnDynamicSearchRentTransRentRate.setSize(200, 31);
+		btnDynamicSearchRentTransRentRate.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchRentTransRentRate);					//add button to the panel
+		
+		//rent transaction search by customer
+		lblSearchTransRentCustomer = new JLabel("Enter Customer ID: ");										//label
+		lblSearchTransRentCustomer.setLocation(125, 255);											//size, location, visibility
+		lblSearchTransRentCustomer.setSize(240, 31);
+		lblSearchTransRentCustomer.setFont(customFont6);											//set the labels font
+		lblSearchTransRentCustomer.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransRentCustomer.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransRentCustomer);											//add label to the panel
+																				
+		txtTransRentCustomer = new JTextField();							//text field to accept search by transaction customer
+		txtTransRentCustomer.setLocation(85, 285);							//size, location and visibility
+		txtTransRentCustomer.setSize(200, 31);
+		txtTransRentCustomer.setVisible(false);
+		pnlDynamicSearch.add(txtTransRentCustomer);						//add text field to panel
+				
+		btnDynamicSearchRentTransCustomer = new JButton("Search By Customer");		    		//button to search by rent transactions by customer
+		//btnDynamicSearchRentTransCustomer.setActionCommand("DynamicSearchRTransCustomer");		//action command for button
+		//btnDynamicSearchRentTransCustomer.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransCustomer.setLocation(85, 325);									//location, size, visibility 
+		btnDynamicSearchRentTransCustomer.setSize(200, 31);
+		btnDynamicSearchRentTransCustomer.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchRentTransCustomer);									//add button to the panel
+		
+		//rent transaction search by estate agent
+		lblSearchTransRentEstateAgent = new JLabel("Enter Estate Agent ID: ");										//label
+		lblSearchTransRentEstateAgent.setLocation(115, 255);											//size, location, visibility
+		lblSearchTransRentEstateAgent.setSize(240, 31);
+		lblSearchTransRentEstateAgent.setFont(customFont6);											//set the labels font
+		lblSearchTransRentEstateAgent.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
+		lblSearchTransRentEstateAgent.setVisible(false);
+		pnlDynamicSearch.add(lblSearchTransRentEstateAgent);											//add label to the panel
+																						
+		txtTransRentEstateAgent = new JTextField();							//text field to accept search by transaction cost
+		txtTransRentEstateAgent.setLocation(85, 285);							//size, location and visibility
+		txtTransRentEstateAgent.setSize(200, 31);
+		txtTransRentEstateAgent.setVisible(false);
+		pnlDynamicSearch.add(txtTransRentEstateAgent);						//add text field to panel
+				
+		btnDynamicSearchRentTransEAgent = new JButton("Search By Estate Agent");		    		//button to search by buy transactions by customer
+		//btnDynamicSearchRentTransEAgent.setActionCommand("DynamicSearchRTransEAgent");		//action command for button
+		//btnDynamicSearchRentTransEAgent.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransEAgent.setLocation(85, 325);									//location, size, visibility 
+		btnDynamicSearchRentTransEAgent.setSize(200, 31);
+		btnDynamicSearchRentTransEAgent.setVisible(false);
+		pnlDynamicSearch.add(btnDynamicSearchRentTransEAgent);									//add button to the panel
 		
 		//TextArea for results
 		showAllResults = new JTextArea(1000, 30);			//text area shown when this panel is picked from menu
-		scr1Results = new JScrollPane(showAllReminder);		//scroller for text area, add text area to scroll pane
+		scr1Results = new JScrollPane(showAllResults);		//scroller for text area, add text area to scroll pane
 		scr1Results.setLocation(350, 70);					//location, size visibility
 		scr1Results.setSize(800, 500);
 		showAllResults.setEditable(false);
