@@ -93,7 +93,19 @@ public class ApplicationMainWindow extends JFrame
 				   lblNewCustomerNameF, lblNewCustomerNameL, lblNewCustomerAddress, lblCustomerUpdateFirstName, lblCustomerUpdateLastName,
 				   lblCustomerUpdateAddress, lblCreateReminderDate, lblCreateReminderTime, lblUpdateReminderDate, lblUpdateReminderTime,
 				   lblUpdateReminderSubject, lblUpdateReminderDesc;
-	public static JTable tblShowStaff, tblShowHouses, tblShowRentTransactions, tblShowCustomer, tblShowReminder, tblShowDynamicResult;
+	//The follow JTables and JScrollPanes are instantiated otherwise we would get null pointer exceptions
+	public static JTable tblShowStaff = new JTable();
+	public static JTable tblShowHouses = new JTable();
+	public static JTable tblShowTransactions = new JTable();
+	public static JTable tblShowCustomer = new JTable();
+	public static JTable tblShowReminder = new JTable();
+	public static JTable tblShowDynamicResult = new JTable();
+	public static JScrollPane scr1Staff = new JScrollPane();
+	public static JScrollPane scr1House = new JScrollPane();
+	public static JScrollPane scr1Transactions = new JScrollPane();
+	public static JScrollPane scr1Customer = new JScrollPane();
+	public static JScrollPane scr1Reminder = new JScrollPane();
+	public static JScrollPane scr1Results = new JScrollPane();
     public static JLabel lblViewStaffMember, lblEnterIDStaff, lblUsernameSendFile, lblCompPathSendFile, lblUsernameSendFileO,
     					 lblOnlineNameSendFile, lblEnterIDHouse, lblViewHouses, lblTransRentHouseID, lblTransStartDate, lblTransEndDate,
     					 lblTransMonthlyRate, lblRentEstateAgentID, lblBuyEstateAgentID, lblBuyCost,lblTransBuyHouseID,
@@ -139,8 +151,7 @@ public class ApplicationMainWindow extends JFrame
     				      btnDynamicSearchBuyTransCounty, btnDynamicSearchBuyTransCost, btnDynamicSearchBuyTransCustomer,
     				      btnDynamicSearchBuyTransEAgent, btnDynamicSearchRentTransCounty, btnDynamicSearchRentTransRentRate,
     				      btnDynamicSearchRentTransCustomer, btnDynamicSearchRentTransEAgent;
-	public static JScrollPane scr1Staff, scrlFiles, scrlSendbleFiles, scrlRemovableFiles, scr1House, scrlAllFiles,
-							  scr1Transactions, scr1Customer, scr1Reminder, scr1Results;
+	public static JScrollPane scrlFiles, scrlSendbleFiles, scrlRemovableFiles, scrlAllFiles;
 	//String arrays for drop down list options
 	private String[] userTypeChoices = {"Administrative", "Management", "Estate Agent"};
 	private String[] sendFileChoices = {"Choose...","From Online Directory", "From Computer"};
@@ -210,7 +221,7 @@ public class ApplicationMainWindow extends JFrame
 	    viewRemindersPanel();					//Create panel to view reminders
 	    searchOptionsMenu();					//Create options menu for searching
 	    dynamicSearchPanel();					//Create panel to perform more dynamic searches
-	    tblShowRentTransactions = new JTable();	//Table for viewing buy and rent transactions
+	    tblShowTransactions = new JTable();	//Table for viewing buy and rent transactions
 	    
 	    //Use anonymous class and add window closing event which calls the exit() method
 	    addWindowListener(new WindowAdapter() 
@@ -823,14 +834,6 @@ public class ApplicationMainWindow extends JFrame
 		pnlStaffMemberShowArea.setLocation(90, 50);				//set the panels location
 		pnlStaffMemberShowArea.setBackground(Color.black);		//background colour is black
 			
-		showAllStaff = new JTextArea(1000, 30);			//text area shown when this panel is picked from menu
-		scr1Staff = new JScrollPane(showAllStaff);		//scroller for text area, add text area to scroll pane
-		scr1Staff.setLocation(100, 70);					//location, size visibility
-		scr1Staff.setSize(1000, 400);
-		showAllStaff.setEditable(false);
-		scr1Staff.setVisible(false);
-		pnlStaffMemberShowArea.add(scr1Staff);						//add scroll pane to panel
-			
 		btnShowAllStaff = new JButton("View All Staff");			//button to show all the staff
 		btnShowAllStaff.setActionCommand("ShowAllStaff");			//action command for button
 		btnShowAllStaff.addActionListener(clientHandler);			//event listener
@@ -990,7 +993,7 @@ public class ApplicationMainWindow extends JFrame
 		scrlFiles = new JScrollPane(showAllFiles);		//scroller for text area, add text area to scroll pane
 		scrlFiles.setLocation(295, 100);				//location, size visibility
 		scrlFiles.setSize(400, 250);
-		showAllStaff.setEditable(false);
+		showAllFiles.setEditable(false);
 		scrlFiles.setVisible(true);
 		pnlDownloadFile.add(scrlFiles);	
 		
@@ -1564,15 +1567,7 @@ public class ApplicationMainWindow extends JFrame
 		pnlHouseShowArea.setSize(1200, 600);				//set the panels size
 		pnlHouseShowArea.setLocation(90, 50);				//set the panels location
 		pnlHouseShowArea.setBackground(Color.black);		//background colour is black
-					
-		showAllHouses = new JTextArea(1000, 30);			//text area shown when this panel is picked from menu
-		scr1House = new JScrollPane(showAllHouses);		//scroller for text area, add text area to scroll pane
-		scr1House.setLocation(100, 70);					//location, size visibility
-		scr1House.setSize(1000, 400);
-		showAllHouses.setEditable(false);
-		scr1House.setVisible(false);
-		pnlHouseShowArea.add(scr1House);						//add scroll pane to panel
-					
+
 		btnShowAllHouses = new JButton("View All Houses");			//button to show all the houses
 		btnShowAllHouses.setActionCommand("ShowAllHouses");			//action command for button
 		btnShowAllHouses.addActionListener(clientHandler);			//event listener
@@ -2266,15 +2261,6 @@ public class ApplicationMainWindow extends JFrame
 		cmbTransactionViewOptions.addItemListener(listHandler);				//add an event handler for the combo box
 		cmbTransactionViewOptions.setVisible(true);							//set combo box visible to true
 		pnlViewTransaction.add(cmbTransactionViewOptions);					//add combo box to the panel
-				
-		//SHOW TRANSACTIONS
-		showAllTransactions = new JTextArea(1000, 30);			//text area shown when this panel is picked from menu
-		scr1Transactions = new JScrollPane(showAllTransactions);//scroller for text area, add text area to scroll pane
-		scr1Transactions.setLocation(50, 120);					//location, size visibility
-		scr1Transactions.setSize(900, 370);
-		showAllTransactions.setEditable(false);
-		scr1Transactions.setVisible(false);
-		pnlViewTransaction.add(scr1Transactions);						//add scroll pane to panel
 		
 		//SEARCH RENT TRANSACTION CONTROLS
 		btnViewAllRentTrans = new JButton("View All Rent Transactions");		//button to view all rent transaction
@@ -2590,14 +2576,6 @@ public class ApplicationMainWindow extends JFrame
 		pnlCustomerShowArea.setLocation(90, 50);				//set the panels location
 		pnlCustomerShowArea.setBackground(Color.black);		//background colour is black
 							
-		showAllCustomers = new JTextArea(1000, 30);			//text area shown when this panel is picked from menu
-		scr1Customer = new JScrollPane(showAllCustomers);		//scroller for text area, add text area to scroll pane
-		scr1Customer.setLocation(100, 70);					//location, size visibility
-		scr1Customer.setSize(1000, 400);
-		showAllCustomers.setEditable(false);
-		scr1Customer.setVisible(false);
-		pnlCustomerShowArea.add(scr1Customer);						//add scroll pane to panel
-							
 		btnShowAllCustomers = new JButton("View All Customers");			//button to show all customers
 		btnShowAllCustomers.setActionCommand("ShowAllCustomers");			//action command for button
 		btnShowAllCustomers.addActionListener(clientHandler);			//event listener
@@ -2662,19 +2640,19 @@ public class ApplicationMainWindow extends JFrame
 		reminderOptionsMenu.add(addReminder);					//Adding it to reminder options menu
 		addReminder.addActionListener(menuHandler);				//Giving it an event listener
 		
-		updateReminder = new JMenuItem("Update Reminder");			//Create menu item (Create Reminder)
+		updateReminder = new JMenuItem("Update Reminder");			//Create menu item (Update Reminder)
 		updateReminder.setFont(customFont4);						//Setting some styling for it
 		updateReminder.setForeground(Color.decode("#BE81F7"));
 		reminderOptionsMenu.add(updateReminder);					//Adding it to reminder options menu
 		updateReminder.addActionListener(menuHandler);				//Giving it an event listener
 			
-		deleteReminder = new JMenuItem("Delete Reminder");			//Create menu item (Create Reminder)
+		deleteReminder = new JMenuItem("Delete Reminder");			//Create menu item (Delete Reminder)
 		deleteReminder.setFont(customFont4);						//Setting some styling for it
 		deleteReminder.setForeground(Color.decode("#BE81F7"));
 		reminderOptionsMenu.add(deleteReminder);					//Adding it to reminder options menu
 		deleteReminder.addActionListener(menuHandler);				//Giving it an event listener
 		
-		viewReminder = new JMenuItem("View Reminders");			//Create menu item 
+		viewReminder = new JMenuItem("View Reminders");			//Create menu item (View Reminders)
 		viewReminder.setFont(customFont4);						//Setting some styling for it
 		viewReminder.setForeground(Color.decode("#BE81F7"));
 		reminderOptionsMenu.add(viewReminder);					//Adding it to reminder options menu
@@ -2797,7 +2775,7 @@ public class ApplicationMainWindow extends JFrame
 		this.add(pnlUpdateReminder);				//Add the panel to the window	
 						
 		/*Underneath the panel there are some labels, buttons and text fields used to retrieve, a 
-		particular customer and add him/her into the grid above for updating*/
+		particular reminder and add it into the grid above for updating*/
 		lblEnterIDReminder = new JLabel("Enter ID of Reminder you want to edit"); //label
 		lblEnterIDReminder.setLocation(480, 400);									   //attributes for label
 		lblEnterIDReminder.setSize(250, 30);
@@ -2835,7 +2813,7 @@ public class ApplicationMainWindow extends JFrame
 		TitledBorder title;
 		Border borderLine = BorderFactory.createLineBorder(Color.decode("#BE81F7"), 2);
 			
-		pnlDeleteReminder = new JPanel();							//create a panel to delete customer
+		pnlDeleteReminder = new JPanel();							//create a panel to delete reminder
 		pnlDeleteReminder.setLayout(null);							//layout is null
 		pnlDeleteReminder.setSize(400, 180);						//set the panels size
 		pnlDeleteReminder.setLocation(490, 90);						//set the panels location
@@ -2848,7 +2826,7 @@ public class ApplicationMainWindow extends JFrame
 		lblDeleteReminder.setForeground(Color.decode("#BE81F7"));		//set labels foreground colour
 		pnlDeleteReminder.add(lblDeleteReminder);						//and label to panel
 						 
-		btnDeleteReminder = new JButton("Delete Reminder");				//button to delete customer
+		btnDeleteReminder = new JButton("Delete Reminder");				//button to delete reminder
 		btnDeleteReminder.setActionCommand("DeleteReminder");			//buttons action command
 		btnDeleteReminder.addActionListener(clientHandler);				//event listener
 		btnDeleteReminder.setLocation(135, 75);							//size, location, visibility
@@ -2876,7 +2854,7 @@ public class ApplicationMainWindow extends JFrame
 		title.setTitleColor(Color.decode("#BE81F7"));
 		pnlDeleteReminder.setBorder(title);
 					
-		pnlDeleteReminder.setVisible(false);		//Panel to delete customer is not visible when application starts
+		pnlDeleteReminder.setVisible(false);		//Panel to delete reminder is not visible when application starts
 				
 		this.add(pnlDeleteReminder);				//add the panel to the application window
 	}//end deleteReminderPanel()
@@ -2892,14 +2870,6 @@ public class ApplicationMainWindow extends JFrame
 		pnlReminderShowArea.setSize(1200, 600);				//set the panels size
 		pnlReminderShowArea.setLocation(90, 50);				//set the panels location
 		pnlReminderShowArea.setBackground(Color.black);		//background colour is black
-							
-		showAllReminder = new JTextArea(1000, 30);			//text area shown when this panel is picked from menu
-		scr1Reminder = new JScrollPane(showAllReminder);		//scroller for text area, add text area to scroll pane
-		scr1Reminder.setLocation(100, 70);					//location, size visibility
-		scr1Reminder.setSize(1000, 400);
-		showAllReminder.setEditable(false);
-		scr1Reminder.setVisible(false);
-		pnlReminderShowArea.add(scr1Reminder);						//add scroll pane to panel
 							
 		btnShowAllReminder = new JButton("View Todays Reminders");			//button to show all Reminder
 		btnShowAllReminder.setActionCommand("ShowTodaysReminder");			//action command for button
@@ -2961,7 +2931,7 @@ public class ApplicationMainWindow extends JFrame
 		dynamicSearch = new JMenuItem("Dynamic Search");			//Create menu item (Dynamic Search)
 		dynamicSearch.setFont(customFont4);						//Setting some styling for it
 		dynamicSearch.setForeground(Color.decode("#BE81F7"));
-		searchOptionsMenu.add(dynamicSearch);					//Adding it to reminder options menu
+		searchOptionsMenu.add(dynamicSearch);					//Adding it to search options menu
 		dynamicSearch.addActionListener(menuHandler);				//Giving it an event listener
 	}//end searchOptionsMenu()
 	
@@ -3126,7 +3096,7 @@ public class ApplicationMainWindow extends JFrame
 		btnDynamicSearchHouseRent.setVisible(false);
 		pnlDynamicSearch.add(btnDynamicSearchHouseRent);							//add button to panel
 		
-		btnDynamicSearchHouseBuy = new JButton("Search Buyable Houses");		    //button to search by houses for rent
+		btnDynamicSearchHouseBuy = new JButton("Search Buyable Houses");		    //button to search by houses for sell
 		btnDynamicSearchHouseBuy.setActionCommand("DynamicSearchBuyHouse");		//action command for button
 		btnDynamicSearchHouseBuy.addActionListener(clientHandler);				//event listener
 		btnDynamicSearchHouseBuy.setLocation(84, 190);								//location, size, visibility 
@@ -3166,7 +3136,7 @@ public class ApplicationMainWindow extends JFrame
 		lblSearchHouseCounty.setVisible(false);
 		pnlDynamicSearch.add(lblSearchHouseCounty);											//add label to the panel
 						
-		txtHouseCounty = new JTextField();							//text field to accept search by staff name
+		txtHouseCounty = new JTextField();							//text field to accept search by house county name
 		txtHouseCounty.setLocation(85, 210);						//size, location and visibility
 		txtHouseCounty.setSize(200, 31);
 		txtHouseCounty.setVisible(false);
@@ -3214,7 +3184,7 @@ public class ApplicationMainWindow extends JFrame
 		txtCustFName.setVisible(false);
 		pnlDynamicSearch.add(txtCustFName);						//add text field to panel
 				
-		btnDynamicSearchCustFName = new JButton("Search First Name");		    //button to search by houses by county
+		btnDynamicSearchCustFName = new JButton("Search First Name");		    //button to search by customer first name
 		btnDynamicSearchCustFName.setActionCommand("DynamicSearchCustFName");		//action command for button
 		btnDynamicSearchCustFName.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchCustFName.setLocation(84, 250);								//location, size, visibility 
@@ -3231,13 +3201,13 @@ public class ApplicationMainWindow extends JFrame
 		lblSearchCustLName.setVisible(false);
 		pnlDynamicSearch.add(lblSearchCustLName);											//add label to the panel
 										
-		txtCustLName = new JTextField();							//text field to accept search by customer first name
+		txtCustLName = new JTextField();							//text field to accept search by customer last name
 		txtCustLName.setLocation(85, 210);						//size, location and visibility
 		txtCustLName.setSize(200, 31);
 		txtCustLName.setVisible(false);
 		pnlDynamicSearch.add(txtCustLName);						//add text field to panel
 						
-		btnDynamicSearchCustLName = new JButton("Search Last Name");		    //button to search by houses by county
+		btnDynamicSearchCustLName = new JButton("Search Last Name");		    //button to search by customers by last name
 		btnDynamicSearchCustLName.setActionCommand("DynamicSearchCustLName");		//action command for button
 		btnDynamicSearchCustLName.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchCustLName.setLocation(84, 250);								//location, size, visibility 
@@ -3260,7 +3230,7 @@ public class ApplicationMainWindow extends JFrame
 		txtCustAddress.setVisible(false);
 		pnlDynamicSearch.add(txtCustAddress);						//add text field to panel
 								
-		btnDynamicSearchCustAddress = new JButton("Search Address");		    //button to search by customers by addresss
+		btnDynamicSearchCustAddress = new JButton("Search Address");		    //button to search by customers by address
 		btnDynamicSearchCustAddress.setActionCommand("DynamicSearchCustAddress");		//action command for button
 		btnDynamicSearchCustAddress.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchCustAddress.setLocation(84, 250);								//location, size, visibility 
@@ -3328,7 +3298,7 @@ public class ApplicationMainWindow extends JFrame
 		pnlDynamicSearch.add(btnDynamicSearchBuyTransCounty);					//add button to the panel
 		
 		//buy transaction search by cost
-		lblSearchTransBuyCost = new JLabel("Enter Cost (add =, <, or > before number): ");										//label
+		lblSearchTransBuyCost = new JLabel("Enter Cost (add =, <, or > before number): ");	//label
 		lblSearchTransBuyCost.setLocation(50, 255);											//size, location, visibility
 		lblSearchTransBuyCost.setSize(280, 31);
 		lblSearchTransBuyCost.setFont(customFont6);											//set the labels font
@@ -3359,7 +3329,7 @@ public class ApplicationMainWindow extends JFrame
 		lblSearchTransBuyCustomer.setVisible(false);
 		pnlDynamicSearch.add(lblSearchTransBuyCustomer);											//add label to the panel
 																		
-		txtTransBuyCustomer = new JTextField();							//text field to accept search by transaction cost
+		txtTransBuyCustomer = new JTextField();							//text field to accept search by transaction customers
 		txtTransBuyCustomer.setLocation(85, 285);							//size, location and visibility
 		txtTransBuyCustomer.setSize(200, 31);
 		txtTransBuyCustomer.setVisible(false);
@@ -3382,13 +3352,13 @@ public class ApplicationMainWindow extends JFrame
 		lblSearchTransBuyEstateAgent.setVisible(false);
 		pnlDynamicSearch.add(lblSearchTransBuyEstateAgent);											//add label to the panel
 																				
-		txtTransBuyEstateAgent = new JTextField();							//text field to accept search by transaction cost
+		txtTransBuyEstateAgent = new JTextField();							//text field to accept search by transaction estate agents
 		txtTransBuyEstateAgent.setLocation(85, 285);							//size, location and visibility
 		txtTransBuyEstateAgent.setSize(200, 31);
 		txtTransBuyEstateAgent.setVisible(false);
 		pnlDynamicSearch.add(txtTransBuyEstateAgent);						//add text field to panel
 		
-		btnDynamicSearchBuyTransEAgent = new JButton("Search By Estate Agent");		    		//button to search by buy transactions by customer
+		btnDynamicSearchBuyTransEAgent = new JButton("Search By Estate Agent");		    		//button to search by buy transactions by estate agent
 		btnDynamicSearchBuyTransEAgent.setActionCommand("DynamicSearchBTransEAgent");		//action command for button
 		btnDynamicSearchBuyTransEAgent.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchBuyTransEAgent.setLocation(85, 325);									//location, size, visibility 
@@ -3422,24 +3392,24 @@ public class ApplicationMainWindow extends JFrame
 		lblSearchTransRentCounty.setVisible(false);
 		pnlDynamicSearch.add(lblSearchTransRentCounty);											//add label to the panel
 																
-		txtTransRentCounty = new JTextField();							//text field to accept search by transaction county
+		txtTransRentCounty = new JTextField();							//text field to accept search by transaction county (rent)
 		txtTransRentCounty.setLocation(85, 285);							//size, location and visibility
 		txtTransRentCounty.setSize(200, 31);
 		txtTransRentCounty.setVisible(false);
 		pnlDynamicSearch.add(txtTransRentCounty);						//add text field to panel
 				
-		btnDynamicSearchRentTransCounty = new JButton("Search By County");		    //button to search by rent transactions by county
-		//btnDynamicSearchRentTransCounty.setActionCommand("DynamicSearchRTransCounty");		//action command for button
-		//btnDynamicSearchRentTransCounty.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransCounty = new JButton("Search By County");		    		//button to search by rent transactions by county
+		btnDynamicSearchRentTransCounty.setActionCommand("DynamicSearchRTransCounty");		//action command for button
+		btnDynamicSearchRentTransCounty.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchRentTransCounty.setLocation(85, 325);								//location, size, visibility 
 		btnDynamicSearchRentTransCounty.setSize(200, 31);
 		btnDynamicSearchRentTransCounty.setVisible(false);
 		pnlDynamicSearch.add(btnDynamicSearchRentTransCounty);					//add button to the panel
 		
 		//rent transaction search by monthly rate
-		lblSearchTransRentRate = new JLabel("Enter Monthly Rate: ");										//label
-		lblSearchTransRentRate.setLocation(135, 255);											//size, location, visibility
-		lblSearchTransRentRate.setSize(240, 31);
+		lblSearchTransRentRate = new JLabel("Enter Monthly Rate (add =, <, or > before number): ");										//label
+		lblSearchTransRentRate.setLocation(20, 255);											//size, location, visibility
+		lblSearchTransRentRate.setSize(330, 31);
 		lblSearchTransRentRate.setFont(customFont6);											//set the labels font
 		lblSearchTransRentRate.setForeground(Color.decode("#BE81F7"));						//set labels foreground colour
 		lblSearchTransRentRate.setVisible(false);
@@ -3452,8 +3422,8 @@ public class ApplicationMainWindow extends JFrame
 		pnlDynamicSearch.add(txtTransRentRate);						//add text field to panel
 				
 		btnDynamicSearchRentTransRentRate = new JButton("Search By Rate");		    //button to search by rent transactions by rate
-		//btnDynamicSearchBuyTransRentRate.setActionCommand("DynamicSearchRTransRentRate");		//action command for button
-		//btnDynamicSearchBuyTransRentRate.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransRentRate.setActionCommand("DynamicSearchRTransRentRate");		//action command for button
+		btnDynamicSearchRentTransRentRate.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchRentTransRentRate.setLocation(85, 325);								//location, size, visibility 
 		btnDynamicSearchRentTransRentRate.setSize(200, 31);
 		btnDynamicSearchRentTransRentRate.setVisible(false);
@@ -3475,8 +3445,8 @@ public class ApplicationMainWindow extends JFrame
 		pnlDynamicSearch.add(txtTransRentCustomer);						//add text field to panel
 				
 		btnDynamicSearchRentTransCustomer = new JButton("Search By Customer");		    		//button to search by rent transactions by customer
-		//btnDynamicSearchRentTransCustomer.setActionCommand("DynamicSearchRTransCustomer");		//action command for button
-		//btnDynamicSearchRentTransCustomer.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransCustomer.setActionCommand("DynamicSearchRTransCustomer");		//action command for button
+		btnDynamicSearchRentTransCustomer.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchRentTransCustomer.setLocation(85, 325);									//location, size, visibility 
 		btnDynamicSearchRentTransCustomer.setSize(200, 31);
 		btnDynamicSearchRentTransCustomer.setVisible(false);
@@ -3491,28 +3461,19 @@ public class ApplicationMainWindow extends JFrame
 		lblSearchTransRentEstateAgent.setVisible(false);
 		pnlDynamicSearch.add(lblSearchTransRentEstateAgent);											//add label to the panel
 																						
-		txtTransRentEstateAgent = new JTextField();							//text field to accept search by transaction cost
+		txtTransRentEstateAgent = new JTextField();							//text field to accept search by transaction estate agent
 		txtTransRentEstateAgent.setLocation(85, 285);							//size, location and visibility
 		txtTransRentEstateAgent.setSize(200, 31);
 		txtTransRentEstateAgent.setVisible(false);
 		pnlDynamicSearch.add(txtTransRentEstateAgent);						//add text field to panel
 				
-		btnDynamicSearchRentTransEAgent = new JButton("Search By Estate Agent");		    		//button to search by buy transactions by customer
-		//btnDynamicSearchRentTransEAgent.setActionCommand("DynamicSearchRTransEAgent");		//action command for button
-		//btnDynamicSearchRentTransEAgent.addActionListener(clientHandler);					//event listener
+		btnDynamicSearchRentTransEAgent = new JButton("Search By Estate Agent");		    //button to search by buy transactions by estate agent
+		btnDynamicSearchRentTransEAgent.setActionCommand("DynamicSearchRTransEAgent");		//action command for button
+		btnDynamicSearchRentTransEAgent.addActionListener(clientHandler);					//event listener
 		btnDynamicSearchRentTransEAgent.setLocation(85, 325);									//location, size, visibility 
 		btnDynamicSearchRentTransEAgent.setSize(200, 31);
 		btnDynamicSearchRentTransEAgent.setVisible(false);
 		pnlDynamicSearch.add(btnDynamicSearchRentTransEAgent);									//add button to the panel
-		
-		//TextArea for results
-		showAllResults = new JTextArea(1000, 30);			//text area shown when this panel is picked from menu
-		scr1Results = new JScrollPane(showAllResults);		//scroller for text area, add text area to scroll pane
-		scr1Results.setLocation(350, 70);					//location, size visibility
-		scr1Results.setSize(800, 500);
-		showAllResults.setEditable(false);
-		scr1Results.setVisible(false);
-		pnlDynamicSearch.add(scr1Results);					//add scroll pane to panel
 		
 		//Creating a titled, lined border
 		title = BorderFactory.createTitledBorder(borderLine, "Dynamic Search Window");
@@ -3520,7 +3481,7 @@ public class ApplicationMainWindow extends JFrame
 		title.setTitleColor(Color.decode("#BE81F7"));
 		pnlDynamicSearch.setBorder(title);
 									
-		pnlDynamicSearch.setVisible(false);		//Panel to view Reminder is not visible when application starts
+		pnlDynamicSearch.setVisible(false);		//Panel to view dynamic search is not visible when application starts
 									
 		this.add(pnlDynamicSearch);				//add the panel to the application window
 	}//end dynamicSearchPanel()

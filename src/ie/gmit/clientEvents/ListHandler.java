@@ -6,6 +6,8 @@ import ie.gmit.clientGUI.ApplicationMainWindow;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import javax.swing.JOptionPane;
+
 /*ListHandler class implements Item Listener , this class is responsible for determining the selected index
  of specific combo boxes and returning the selected index to be used by the client event handler*/
 public class ListHandler implements ItemListener 
@@ -33,10 +35,13 @@ public class ListHandler implements ItemListener
 	private static int transSearchTypeIndex;			//Hold index of transaction b or r search type combo
 	private static int transBuySearchTypeIndex;			//Hold index of transaction buy search type
 	private static int transRentSearchTypeIndex;		//Hold index of transaction rent search type
+	private int count = 0;
 	
 	//Triggered when index of a combo box selected item changes
 	public void itemStateChanged(ItemEvent e) 
 	{
+		char c = ClientEventHandler.staffTypeAuthenticator;
+		
 		//If the combo box for login staff type changes
 		if(e.getSource() == ApplicationMainWindow.cmbStaffLoginOptions)
 		{
@@ -326,7 +331,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblViewTransactionRent.setVisible(false);
 				ApplicationMainWindow.txtSearchViewRentTrans.setVisible(false);
 				ApplicationMainWindow.btnSearchRentTrans.setVisible(false); 
-				ApplicationMainWindow.tblShowRentTransactions.setVisible(false);
+				ApplicationMainWindow.tblShowTransactions.setVisible(false);
 			}
 			else if(viewTransactionOptionIndex == 2)//rent update
 			{
@@ -340,11 +345,12 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblViewTransactionBuy.setVisible(false);
 				ApplicationMainWindow.txtSearchViewBuyTrans.setVisible(false);
 				ApplicationMainWindow.btnSearchBuyTrans.setVisible(false); 
-				ApplicationMainWindow.tblShowRentTransactions.setVisible(false);
+				ApplicationMainWindow.tblShowTransactions.setVisible(false);
 			}
 		}
 		
-		//If the combo box for view rent or buy transaction type option changes
+		//This is the main combo box for the dynamic search panel allowing a user to choose which type
+		//of entity they wish to search.
 		if(e.getSource() == ApplicationMainWindow.cmbDynamicSearchEntities)
 		{
 			//set selected index
@@ -416,75 +422,159 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(dynamicSearchEntityIndex == 1)//staff search
 			{
-				ApplicationMainWindow.lblSearchHouseType.setVisible(false);
-				ApplicationMainWindow.cmbDynamicHouseSearchType.setVisible(false);
-				ApplicationMainWindow.lblSearchCustomerType.setVisible(false);
-				ApplicationMainWindow.cmbDynamicCustomerSearchType.setVisible(false);
-				ApplicationMainWindow.lblSearchStaffFName.setVisible(false);
-				ApplicationMainWindow.txtStaffFirstName.setVisible(false);
-				ApplicationMainWindow.lblSearchStaffLName.setVisible(false);
-				ApplicationMainWindow.txtStaffLastName.setVisible(false);
-				ApplicationMainWindow.lblSearchStaffEmp.setVisible(false);
-				ApplicationMainWindow.cmbStaffSearchEmpType.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchStaffFName.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchStaffLName.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchStaffEType.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchHouseRent.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchHouseBuy.setVisible(false);
-				ApplicationMainWindow.txtHouseTown.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchHouseTown.setVisible(false);
-				ApplicationMainWindow.lblSearchHouseTown.setVisible(false);
-				ApplicationMainWindow.lblSearchHouseCounty.setVisible(false);
-				ApplicationMainWindow.txtHouseCounty.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchHouseCounty.setVisible(false);
-				ApplicationMainWindow.lblSearchCustFName.setVisible(false);
-				ApplicationMainWindow.txtCustFName.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchCustFName.setVisible(false);
-				ApplicationMainWindow.lblSearchCustLName.setVisible(false);
-				ApplicationMainWindow.txtCustLName.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchCustLName.setVisible(false);
-				ApplicationMainWindow.lblSearchCustAddress.setVisible(false);
-				ApplicationMainWindow.txtCustAddress.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchCustAddress.setVisible(false);
-				ApplicationMainWindow.lblSearchTransactionType.setVisible(false);
-				ApplicationMainWindow.cmbDynamicTransactionSearchType.setVisible(false);
-				ApplicationMainWindow.lblSearchTransBuyCost.setVisible(false);
-				ApplicationMainWindow.txtTransBuyCost.setVisible(false);
-				ApplicationMainWindow.lblSearchTransBuyCounty.setVisible(false);
-				ApplicationMainWindow.txtTransBuyCounty.setVisible(false);
-				ApplicationMainWindow.lblSearchTransBuyEstateAgent.setVisible(false);
-				ApplicationMainWindow.txtTransBuyEstateAgent.setVisible(false);
-				ApplicationMainWindow.lblSearchTransBuyCustomer.setVisible(false);
-				ApplicationMainWindow.txtTransBuyCustomer.setVisible(false);
-				ApplicationMainWindow.lblSearchBuyTransactionType.setVisible(false);
-				ApplicationMainWindow.cmbDynamicBuyTransactionSearchType.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchBuyTransCounty.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchBuyTransCost.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchBuyTransCustomer.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchBuyTransEAgent.setVisible(false);
-				ApplicationMainWindow.lblSearchTransRentCounty.setVisible(false);
-				ApplicationMainWindow.txtTransRentCounty.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchRentTransCounty.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchHouseRent.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchHouseBuy.setVisible(false);
-				ApplicationMainWindow.lblSearchRentTransactionType.setVisible(false);
-				ApplicationMainWindow.cmbDynamicRentTransactionSearchType.setVisible(false);
-				ApplicationMainWindow.lblSearchTransRentRate.setVisible(false);
-				ApplicationMainWindow.txtTransRentRate.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchRentTransRentRate.setVisible(false);
-				ApplicationMainWindow.lblSearchTransRentCustomer.setVisible(false);
-				ApplicationMainWindow.txtTransRentCustomer.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchRentTransCustomer.setVisible(false);
-				ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
-				ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
-				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
-				//Make staff controls visible
-				ApplicationMainWindow.cmbDynamicStaffSearchType.setVisible(true);
-				ApplicationMainWindow.cmbDynamicStaffSearchType.setSelectedIndex(0);
-				ApplicationMainWindow.lblSearchStaffType.setVisible(true);
+				//The item state changed event is actually fired twice in the background, hence the JOptionPane
+				//below would be shown twice to the user. To combat this we can increment a counter and use % 2
+				//on it. Then only print out the pane when we get a 1. (Half the time, Half of 2 is 1)
+				//So the pane is only shown once, which is what we want.
+				int printOrNot = count % 2;
+				//If user is not a manager they should not be able to create users
+				if(c != 'm')
+				{	
+					if(printOrNot == 1)
+					{
+					//Dialog box saying unsuccessful because your not a manager
+					JOptionPane.showMessageDialog(null, "You are not a manager, you must be a manager to use dynamic staff search",
+							"Invalid User", JOptionPane.ERROR_MESSAGE);
+					}
+					
+					ApplicationMainWindow.lblSearchHouseType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicHouseSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchCustomerType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicCustomerSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchStaffFName.setVisible(false);
+					ApplicationMainWindow.txtStaffFirstName.setVisible(false);
+					ApplicationMainWindow.lblSearchStaffLName.setVisible(false);
+					ApplicationMainWindow.txtStaffLastName.setVisible(false);
+					ApplicationMainWindow.lblSearchStaffEmp.setVisible(false);
+					ApplicationMainWindow.cmbStaffSearchEmpType.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchStaffFName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchStaffLName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchStaffEType.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseRent.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseBuy.setVisible(false);
+					ApplicationMainWindow.txtHouseTown.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseTown.setVisible(false);
+					ApplicationMainWindow.lblSearchHouseTown.setVisible(false);
+					ApplicationMainWindow.lblSearchHouseCounty.setVisible(false);
+					ApplicationMainWindow.txtHouseCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseCounty.setVisible(false);
+					ApplicationMainWindow.lblSearchCustFName.setVisible(false);
+					ApplicationMainWindow.txtCustFName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchCustFName.setVisible(false);
+					ApplicationMainWindow.lblSearchCustLName.setVisible(false);
+					ApplicationMainWindow.txtCustLName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchCustLName.setVisible(false);
+					ApplicationMainWindow.lblSearchCustAddress.setVisible(false);
+					ApplicationMainWindow.txtCustAddress.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchCustAddress.setVisible(false);
+					ApplicationMainWindow.lblSearchTransactionType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicTransactionSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyCost.setVisible(false);
+					ApplicationMainWindow.txtTransBuyCost.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyCounty.setVisible(false);
+					ApplicationMainWindow.txtTransBuyCounty.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyEstateAgent.setVisible(false);
+					ApplicationMainWindow.txtTransBuyEstateAgent.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyCustomer.setVisible(false);
+					ApplicationMainWindow.txtTransBuyCustomer.setVisible(false);
+					ApplicationMainWindow.lblSearchBuyTransactionType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicBuyTransactionSearchType.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransCost.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransCustomer.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransEAgent.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentCounty.setVisible(false);
+					ApplicationMainWindow.txtTransRentCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseRent.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseBuy.setVisible(false);
+					ApplicationMainWindow.lblSearchRentTransactionType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicRentTransactionSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentRate.setVisible(false);
+					ApplicationMainWindow.txtTransRentRate.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransRentRate.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentCustomer.setVisible(false);
+					ApplicationMainWindow.txtTransRentCustomer.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransCustomer.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
+					ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
+				}
+				else
+				{
+					ApplicationMainWindow.lblSearchHouseType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicHouseSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchCustomerType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicCustomerSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchStaffFName.setVisible(false);
+					ApplicationMainWindow.txtStaffFirstName.setVisible(false);
+					ApplicationMainWindow.lblSearchStaffLName.setVisible(false);
+					ApplicationMainWindow.txtStaffLastName.setVisible(false);
+					ApplicationMainWindow.lblSearchStaffEmp.setVisible(false);
+					ApplicationMainWindow.cmbStaffSearchEmpType.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchStaffFName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchStaffLName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchStaffEType.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseRent.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseBuy.setVisible(false);
+					ApplicationMainWindow.txtHouseTown.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseTown.setVisible(false);
+					ApplicationMainWindow.lblSearchHouseTown.setVisible(false);
+					ApplicationMainWindow.lblSearchHouseCounty.setVisible(false);
+					ApplicationMainWindow.txtHouseCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseCounty.setVisible(false);
+					ApplicationMainWindow.lblSearchCustFName.setVisible(false);
+					ApplicationMainWindow.txtCustFName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchCustFName.setVisible(false);
+					ApplicationMainWindow.lblSearchCustLName.setVisible(false);
+					ApplicationMainWindow.txtCustLName.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchCustLName.setVisible(false);
+					ApplicationMainWindow.lblSearchCustAddress.setVisible(false);
+					ApplicationMainWindow.txtCustAddress.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchCustAddress.setVisible(false);
+					ApplicationMainWindow.lblSearchTransactionType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicTransactionSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyCost.setVisible(false);
+					ApplicationMainWindow.txtTransBuyCost.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyCounty.setVisible(false);
+					ApplicationMainWindow.txtTransBuyCounty.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyEstateAgent.setVisible(false);
+					ApplicationMainWindow.txtTransBuyEstateAgent.setVisible(false);
+					ApplicationMainWindow.lblSearchTransBuyCustomer.setVisible(false);
+					ApplicationMainWindow.txtTransBuyCustomer.setVisible(false);
+					ApplicationMainWindow.lblSearchBuyTransactionType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicBuyTransactionSearchType.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransCost.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransCustomer.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchBuyTransEAgent.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentCounty.setVisible(false);
+					ApplicationMainWindow.txtTransRentCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransCounty.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseRent.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchHouseBuy.setVisible(false);
+					ApplicationMainWindow.lblSearchRentTransactionType.setVisible(false);
+					ApplicationMainWindow.cmbDynamicRentTransactionSearchType.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentRate.setVisible(false);
+					ApplicationMainWindow.txtTransRentRate.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransRentRate.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentCustomer.setVisible(false);
+					ApplicationMainWindow.txtTransRentCustomer.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransCustomer.setVisible(false);
+					ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
+					ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
+					ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
+					//Make staff controls visible, user can use these controls to decide how he/she wishes
+					//to search for staff
+					ApplicationMainWindow.cmbDynamicStaffSearchType.setVisible(true);
+					ApplicationMainWindow.cmbDynamicStaffSearchType.setSelectedIndex(0);
+					ApplicationMainWindow.lblSearchStaffType.setVisible(true);
+					ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
+				}
 			}
 			else if(dynamicSearchEntityIndex == 2)//house search
 			{
@@ -551,10 +641,12 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
-				//make house controls visible
+				//Make house controls visible, user can use these controls to decide how he/she wishes
+				//to search for house
 				ApplicationMainWindow.lblSearchHouseType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicHouseSearchType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicHouseSearchType.setSelectedIndex(0);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(dynamicSearchEntityIndex == 3)//customer search
 			{
@@ -621,10 +713,12 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
-				//make customer controls visible
+				//Make customer controls visible, user can use these controls to decide how he/she wishes
+				//to search for customer
 				ApplicationMainWindow.lblSearchCustomerType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicCustomerSearchType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicCustomerSearchType.setSelectedIndex(0);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(dynamicSearchEntityIndex == 4)//transaction search
 			{
@@ -691,13 +785,19 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
-				//make transaction controls visible
+				//Make transaction controls visible, user can use these controls to decide how he/she wishes
+				//to search for transaction
 				ApplicationMainWindow.lblSearchTransactionType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicTransactionSearchType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicTransactionSearchType.setSelectedIndex(0);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
+			
+			++count;
 		}
 		
+		//combo box to decide which type of staff search we are doing
+		//Becomes visible when user decides to search by staff entity in dynamic search panel
 		if(e.getSource() == ApplicationMainWindow.cmbDynamicStaffSearchType)
 		{
 			staffSearchTypeIndex = ApplicationMainWindow.cmbDynamicStaffSearchType.getSelectedIndex();
@@ -714,6 +814,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.btnDynamicSearchStaffFName.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchStaffLName.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchStaffEType.setVisible(false);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(staffSearchTypeIndex == 1)//first name
 			{
@@ -729,6 +830,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.txtStaffFirstName.setVisible(true);
 				ApplicationMainWindow.txtStaffFirstName.setText("");
 				ApplicationMainWindow.btnDynamicSearchStaffFName.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(staffSearchTypeIndex == 2)//last name
 			{
@@ -744,6 +846,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.txtStaffLastName.setVisible(true);
 				ApplicationMainWindow.txtStaffLastName.setText("");
 				ApplicationMainWindow.btnDynamicSearchStaffLName.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(staffSearchTypeIndex == 3)//emp type
 			{
@@ -759,6 +862,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.cmbStaffSearchEmpType.setVisible(true);
 				ApplicationMainWindow.cmbStaffSearchEmpType.setSelectedIndex(0);
 				ApplicationMainWindow.btnDynamicSearchStaffEType.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 		}
 		
@@ -768,7 +872,8 @@ public class ListHandler implements ItemListener
 			empTypeSearchTypeIndex = ApplicationMainWindow.cmbStaffSearchEmpType.getSelectedIndex();
 		}
 		
-		//combo box to decide which type of house search we are doing
+		//Combo box to decide which type of house search we are doing
+		//Becomes visible when user decides to search by house entity in dynamic search panel
 		if(e.getSource() == ApplicationMainWindow.cmbDynamicHouseSearchType)
 		{
 			houseSearchTypeIndex = ApplicationMainWindow.cmbDynamicHouseSearchType.getSelectedIndex();
@@ -783,6 +888,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchHouseCounty.setVisible(false);
 				ApplicationMainWindow.txtHouseCounty.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchHouseCounty.setVisible(false);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(houseSearchTypeIndex == 1)//rentable houses
 			{
@@ -796,6 +902,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.btnDynamicSearchHouseCounty.setVisible(false);
 				//all controls for rent house search visible 
 				ApplicationMainWindow.btnDynamicSearchHouseRent.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(houseSearchTypeIndex == 2)//buyable houses
 			{
@@ -809,6 +916,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.btnDynamicSearchHouseCounty.setVisible(false);
 				//all buyable house search contols are visible
 				ApplicationMainWindow.btnDynamicSearchHouseBuy.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(houseSearchTypeIndex == 3)//town of house
 			{
@@ -823,6 +931,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.txtHouseTown.setVisible(true);
 				ApplicationMainWindow.txtHouseTown.setText("");
 				ApplicationMainWindow.btnDynamicSearchHouseTown.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(houseSearchTypeIndex == 4)//county of house
 			{
@@ -837,10 +946,12 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.txtHouseCounty.setVisible(true);
 				ApplicationMainWindow.txtHouseCounty.setText("");
 				ApplicationMainWindow.btnDynamicSearchHouseCounty.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 		}
 		
 		//combo box to decide which type of customer search we are doing
+		//Becomes visible when user decides to search by customer entity in dynamic search panel
 		if(e.getSource() == ApplicationMainWindow.cmbDynamicCustomerSearchType)
 		{
 			custSearchTypeIndex = ApplicationMainWindow.cmbDynamicCustomerSearchType.getSelectedIndex();
@@ -857,6 +968,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchCustAddress.setVisible(false);
 				ApplicationMainWindow.txtCustAddress.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchCustAddress.setVisible(false);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(custSearchTypeIndex == 1)//first name
 			{
@@ -870,7 +982,9 @@ public class ListHandler implements ItemListener
 				//first name search controls are visible
 				ApplicationMainWindow.lblSearchCustFName.setVisible(true);
 				ApplicationMainWindow.txtCustFName.setVisible(true);
+				ApplicationMainWindow.txtCustFName.setText("");
 				ApplicationMainWindow.btnDynamicSearchCustFName.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(custSearchTypeIndex == 2)//last name
 			{
@@ -884,7 +998,9 @@ public class ListHandler implements ItemListener
 				//last name search controls are visible
 				ApplicationMainWindow.lblSearchCustLName.setVisible(true);
 				ApplicationMainWindow.txtCustLName.setVisible(true);
+				ApplicationMainWindow.txtCustLName.setText("");
 				ApplicationMainWindow.btnDynamicSearchCustLName.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(custSearchTypeIndex == 3)//address
 			{
@@ -898,11 +1014,14 @@ public class ListHandler implements ItemListener
 				//address search controls are visible
 				ApplicationMainWindow.lblSearchCustAddress.setVisible(true);
 				ApplicationMainWindow.txtCustAddress.setVisible(true);
+				ApplicationMainWindow.txtCustAddress.setText("");
 				ApplicationMainWindow.btnDynamicSearchCustAddress.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 		}
 		
 		//combo box to decide which type of transaction search we are doing buy(sell) or rent transaction
+		//Becomes visible when user decides to search by transation entity in dynamic search panel
 		if(e.getSource() == ApplicationMainWindow.cmbDynamicTransactionSearchType)
 		{
 			transSearchTypeIndex = ApplicationMainWindow.cmbDynamicTransactionSearchType.getSelectedIndex();
@@ -937,6 +1056,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
 				ApplicationMainWindow.lblSearchRentTransactionType.setVisible(false);
 				ApplicationMainWindow.cmbDynamicRentTransactionSearchType.setVisible(false);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transSearchTypeIndex == 1)//buy search
 			{
@@ -959,6 +1079,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchBuyTransactionType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicBuyTransactionSearchType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicBuyTransactionSearchType.setSelectedIndex(0);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transSearchTypeIndex == 2)//rent search
 			{
@@ -981,10 +1102,12 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchRentTransactionType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicRentTransactionSearchType.setVisible(true);
 				ApplicationMainWindow.cmbDynamicRentTransactionSearchType.setSelectedIndex(0);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 		}
 		
-		//combo box used to search buy transactions by certain attributes
+		//combo box used to search rent transactions by certain attributes
+		//Becomes visible when user decides to search by rent transation in dynamic search panel
 		if(e.getSource() == ApplicationMainWindow.cmbDynamicRentTransactionSearchType)
 		{
 			transRentSearchTypeIndex = ApplicationMainWindow.cmbDynamicRentTransactionSearchType.getSelectedIndex();
@@ -1004,6 +1127,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transRentSearchTypeIndex == 1)//county search
 			{
@@ -1020,7 +1144,9 @@ public class ListHandler implements ItemListener
 				//county search controls are visible
 				ApplicationMainWindow.lblSearchTransRentCounty.setVisible(true);
 				ApplicationMainWindow.txtTransRentCounty.setVisible(true);
+				ApplicationMainWindow.txtTransRentCounty.setText("");
 				ApplicationMainWindow.btnDynamicSearchRentTransCounty.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transRentSearchTypeIndex == 2)//rate search
 			{
@@ -1037,7 +1163,9 @@ public class ListHandler implements ItemListener
 				//rate search controls are visible
 				ApplicationMainWindow.lblSearchTransRentRate.setVisible(true);
 				ApplicationMainWindow.txtTransRentRate.setVisible(true);
+				ApplicationMainWindow.txtTransRentRate.setText("");
 				ApplicationMainWindow.btnDynamicSearchRentTransRentRate.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transRentSearchTypeIndex == 3)//customer search
 			{
@@ -1054,7 +1182,9 @@ public class ListHandler implements ItemListener
 				//customer search controls are visible
 				ApplicationMainWindow.lblSearchTransRentCustomer.setVisible(true);
 				ApplicationMainWindow.txtTransRentCustomer.setVisible(true);
+				ApplicationMainWindow.txtTransRentCustomer.setText("");
 				ApplicationMainWindow.btnDynamicSearchRentTransCustomer.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transRentSearchTypeIndex == 4)//estate agent search
 			{
@@ -1071,11 +1201,14 @@ public class ListHandler implements ItemListener
 				//estate agent search controls are visible
 				ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(true);
 				ApplicationMainWindow.txtTransRentEstateAgent.setVisible(true);
+				ApplicationMainWindow.txtTransRentEstateAgent.setText("");
 				ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 		}
 		
 		//combo box used to search buy transactions by certain attributes
+		//Becomes visible when user decides to search by sell transaction in dynamic search panel
 		if(e.getSource() == ApplicationMainWindow.cmbDynamicBuyTransactionSearchType)
 		{
 			transBuySearchTypeIndex = ApplicationMainWindow.cmbDynamicBuyTransactionSearchType.getSelectedIndex();
@@ -1094,6 +1227,7 @@ public class ListHandler implements ItemListener
 				ApplicationMainWindow.btnDynamicSearchBuyTransCost.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchBuyTransCustomer.setVisible(false);
 				ApplicationMainWindow.btnDynamicSearchBuyTransEAgent.setVisible(false);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transBuySearchTypeIndex == 1)//county search
 			{
@@ -1110,7 +1244,9 @@ public class ListHandler implements ItemListener
 				//find by county are visible
 				ApplicationMainWindow.lblSearchTransBuyCounty.setVisible(true);
 				ApplicationMainWindow.txtTransBuyCounty.setVisible(true);
+				ApplicationMainWindow.txtTransBuyCounty.setText("");
 				ApplicationMainWindow.btnDynamicSearchBuyTransCounty.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transBuySearchTypeIndex == 2)//cost search
 			{
@@ -1127,7 +1263,9 @@ public class ListHandler implements ItemListener
 				//find by cost are visible
 				ApplicationMainWindow.lblSearchTransBuyCost.setVisible(true);
 				ApplicationMainWindow.txtTransBuyCost.setVisible(true);
+				ApplicationMainWindow.txtTransBuyCost.setText("");
 				ApplicationMainWindow.btnDynamicSearchBuyTransCost.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transBuySearchTypeIndex == 3)//customer search
 			{
@@ -1144,7 +1282,9 @@ public class ListHandler implements ItemListener
 				//find by customer controls are visible
 				ApplicationMainWindow.lblSearchTransBuyCustomer.setVisible(true);
 				ApplicationMainWindow.txtTransBuyCustomer.setVisible(true);
+				ApplicationMainWindow.txtTransBuyCustomer.setText("");
 				ApplicationMainWindow.btnDynamicSearchBuyTransCustomer.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 			else if(transBuySearchTypeIndex == 4)//estate agent search
 			{
@@ -1161,7 +1301,9 @@ public class ListHandler implements ItemListener
 				//make estate agent controls visible
 				ApplicationMainWindow.lblSearchTransBuyEstateAgent.setVisible(true);
 				ApplicationMainWindow.txtTransBuyEstateAgent.setVisible(true);
+				ApplicationMainWindow.txtTransBuyEstateAgent.setText("");
 				ApplicationMainWindow.btnDynamicSearchBuyTransEAgent.setVisible(true);
+				ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 			}
 		}
 	}//end itemStateChanged()

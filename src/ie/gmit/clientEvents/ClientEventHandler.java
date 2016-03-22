@@ -53,8 +53,6 @@ public class ClientEventHandler implements ActionListener
 	private int serverSignal;				//Holds signal from server
 	private long downloadFileLength;		//Holds size of file for download
 	private String downloadFileName;		//Holds name of file for download
-	private StaffMember staffMember;		//Used to hold staff member data
-	private House house;					//Used to hold house data
 	private int istaffType;					//Int of combobox selection
 	private ArrayList<StaffMember> members; 		//Holds list of staff member objects from server
 	private ArrayList<Customer> customersList;      //Holds list of customers from server
@@ -86,6 +84,13 @@ public class ClientEventHandler implements ActionListener
 	private Object[][] searchData;				//Used to hold search data for JTables
 	private boolean isValidOperator;			//True is value is =, > or <
 	private boolean isDouble;					//True if value is a double
+	private String operator;					//Holds the operators =, >, <
+	private StaffMember staffMember;			//Used to hold staff member data
+	private House house;						//Used to hold house data
+	private RentableHouse rHouse;				//Used to hold rentable house data
+	private SellableHouse sHouse;				//Used to hold sellable house data
+	private Customer customer;					//Used to hold customer data
+	private Reminder reminder;					//Used to hold reminder data
 	
 	//Array holds column names for staff table
 	String[] staffColumnNames = {"ID",
@@ -126,6 +131,7 @@ public class ClientEventHandler implements ActionListener
 			"Description",
 			"Date",
 			"Time"};
+	//Array holds column names table showing sell transactions by county name
 	String[] sellTransCountyColumnNames = {"Buy ID",
 			"Cost",
 			"Agent ID",
@@ -134,7 +140,7 @@ public class ClientEventHandler implements ActionListener
 			"HouseStreet",
 			"HouseTown",
 			"HouseCounty"};
-	
+	//Array holds column names table showing sell transactions by customer 
 	String[] sellTransCustColumnNames = {"Buy ID",
 			"House ID",
 			"Cost",
@@ -143,10 +149,40 @@ public class ClientEventHandler implements ActionListener
 			"Cust FName",
 			"Cust LName",
 			"Customer Address"};
+	//Array holds column names table showing sell transactions by agent
 	String[] sellTransAgentColumnNames = {"Buy ID",
 			"House ID",
 			"Cost",
 			"Customer ID",
+			"Agent ID",
+			"Agent FName",
+			"Agent LName",
+			"Agent Address"};
+	//Array holds column names table showing rent transactions by county name
+	String[] rentTransCountyColumnNames = {"Rent ID",
+			"StartDate",
+			"EndDate",
+			"MonthlyRate",
+			"House ID",
+			"HouseStreet",
+			"HouseTown",
+			"HouseCounty"};
+	//Array holds column names table showing rent transactions by customer
+	String[] rentTransCustColumnNames = {"Rent ID",
+			"House ID",
+			"StartDate",
+			"EndDate",
+			"MonthlyRate",
+			"Customer ID",
+			"Cust FName",
+			"Cust LName",
+			"Cust Address"};
+	//Array holds column names table showing rent transactions by county agent
+	String[] rentTransAgentColumnNames = {"Rent ID",
+			"House ID",
+			"StartDate",
+			"EndDate",
+			"MonthlyRate",
 			"Agent ID",
 			"Agent FName",
 			"Agent LName",
@@ -171,15 +207,16 @@ public class ClientEventHandler implements ActionListener
 		    //If the action command is enterAuthenticationInfo
 			case "enterAuthenticationInfo":
 				client.sendMessage(1);				 	//Send server a signal to indicate what we are doing
+				int todaysReminders;
 				
 				/*The User class is included on both client and server side programs as a packaged .jar
 				 file. the class was written by myself and is packaged into a jar as its needed by both
 				 programs (client and server) The source code is available as part of the project in jar classes
 				 folder*/
 				User authenticatingUser = new User();	//Create user object
-				authenticatingUser.setUsername(ApplicationMainWindow.txtUsername.getText()); //set username
+				authenticatingUser.setUsername(ApplicationMainWindow.txtUsername.getText().trim()); //set username .trim() used to remove whitespace
 				char[] arrayPassword = ApplicationMainWindow.passwordField.getPassword();	//get password as char arry
-				authenticatingUser.setPassword(String.valueOf(arrayPassword)); //set password
+				authenticatingUser.setPassword(String.valueOf(arrayPassword).trim()); //set password
 				/*Listhandler gets the index of the item selected from a specific combo box, we can then use
 				 the index to figure out which staff type was selected. Listhandler contains static ints
 				 to hold these indexes*/
@@ -196,20 +233,38 @@ public class ClientEventHandler implements ActionListener
 			
 				//Depending on if the login was successful or not output a relavant dialog box
 				if(authenticated == 0)//if unsuccessful
-				{
+				{	
 					//Dialog box saying unsuccessful
 					JOptionPane.showMessageDialog(null, "Invalid user details - please try again",
 							"Invalid User Authentication", JOptionPane.ERROR_MESSAGE);
 				}
 				else if(authenticated == 1)//if successful
 				{
+					String userMessage = "";
+					todaysReminders = client.getIntFromServer();//gets amount of reminders for today from the server
+					
 					//authentication panel is now gone and menu bar is now available
-					staffTypeAuthenticator = authenticatingUser.getStaffType(); //stores the type of staff member you are
+					//staffTypeAuthenticator stores the type of staff member you are, this is used to determine access permissions
+					//to certain parts of the application and is used by the Menu and List handlers (static variable)
+					staffTypeAuthenticator = authenticatingUser.getStaffType(); 
 					ApplicationMainWindow.pnlAuthentication.setVisible(false);
 					ApplicationMainWindow.appMenuBar.setVisible(true);
 					
+					if(todaysReminders > 0)//determines message in dialog box
+					{
+						userMessage = "You can check these reminders in the reminders menu"; 
+					}
+					else
+					{
+						userMessage = "No reminders to check";
+					}
+						
 					//Dialog box saying successful
 					JOptionPane.showMessageDialog(null, "Valid Entry - Welcome User "+authenticatingUser.getUsername()+"",
+							"Valid User Authentication", JOptionPane.INFORMATION_MESSAGE);
+					
+					//Dialog box saying successful
+					JOptionPane.showMessageDialog(null, "You have "+todaysReminders+" set reminders for today\n"+userMessage,
 							"Valid User Authentication", JOptionPane.INFORMATION_MESSAGE);
 				}
 				break;
@@ -227,9 +282,9 @@ public class ClientEventHandler implements ActionListener
 				
 				try
 				{
-					newUser.setStaffID(Integer.parseInt(ApplicationMainWindow.txtStaffIDUser.getText()));	//get/set id
-					newUser.setUsername(ApplicationMainWindow.txtNewUsername.getText());	//get/set username
-					newUser.setPassword(ApplicationMainWindow.txtNewPassword.getText());	//get/set password
+					newUser.setStaffID(Integer.parseInt(ApplicationMainWindow.txtStaffIDUser.getText().trim()));	//get/set id .trim() removes whitespace
+					newUser.setUsername(ApplicationMainWindow.txtNewUsername.getText().trim());	//get/set username
+					newUser.setPassword(ApplicationMainWindow.txtNewPassword.getText().trim());	//get/set password
 					
 					/*Return index of selected staff type from listHandler for specific combo box, 
 					  pass it into getStaffType() to determine the staff type, the set users staff type to it*/
@@ -264,8 +319,8 @@ public class ClientEventHandler implements ActionListener
 			case "UpdateUser":
 				client.sendMessage(4);		//Send server a signal to indicate what we are doing
 				User oldUser = new User();	//Create User object to hold old user data (user to be updated)
-				oldUser.setUsername(ApplicationMainWindow.txtOldUsername.getText());//get from textfield/set old username
-				oldUser.setPassword(ApplicationMainWindow.txtOldPassword.getText());//get from textfield/set old password
+				oldUser.setUsername(ApplicationMainWindow.txtOldUsername.getText().trim());//get from textfield/set old username
+				oldUser.setPassword(ApplicationMainWindow.txtOldPassword.getText().trim());//get from textfield/set old password
 				
 				/*Return index of selected staff type from listHandler for specific combo box, 
 				  pass it into getStaffType() to determine the staff type, the set users staff type to it*/
@@ -273,8 +328,8 @@ public class ClientEventHandler implements ActionListener
 				oldUser.setStaffType(staffType);
 				
 				User updatedUser = new User();//Create User object to hold update user data (data used to update user)
-				updatedUser.setUsername(ApplicationMainWindow.txtUpdatedUsername.getText());//get from textfield/set updated username
-				updatedUser.setPassword(ApplicationMainWindow.txtUpdatedPassword.getText());//get from textfield/set updated username
+				updatedUser.setUsername(ApplicationMainWindow.txtUpdatedUsername.getText().trim());//get from textfield/set updated username
+				updatedUser.setPassword(ApplicationMainWindow.txtUpdatedPassword.getText().trim());//get from textfield/set updated username
 				
 				/*Return index of selected staff type from listHandler for specific combo box, 
 				  pass it into getStaffType() to determine the staff type, the set users staff type to it*/
@@ -303,8 +358,8 @@ public class ClientEventHandler implements ActionListener
 			case "DeleteUser":
 				client.sendMessage(5);//Send server a signal to indicate what we are doing
 				User deletedUser = new User(); //Create User object to hold delete user data (user to be deleted)
-				deletedUser.setUsername(ApplicationMainWindow.txtDeleteUsername.getText());//get from textfield/set deleted username
-				deletedUser.setPassword(ApplicationMainWindow.txtDeletePassword.getText());//get from textfield/set deleted username
+				deletedUser.setUsername(ApplicationMainWindow.txtDeleteUsername.getText().trim());//get from textfield/set deleted username (.trim() removes whitespace)
+				deletedUser.setPassword(ApplicationMainWindow.txtDeletePassword.getText().trim());//get from textfield/set deleted username
 				
 				/*Return index of selected staff type from listHandler for specific combo box, 
 				  pass it into getStaffType() to determine the staff type, the set users staff type to it*/
@@ -331,24 +386,24 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "CreateNewStaffMember"
 			case "CreateNewStaffMember":
 				serverCreateStaffData = new String[2];	//holds result and id of new user
-				StaffMember createStaff = new StaffMember();//object to hold new staff member data
+				staffMember = new StaffMember();//object to hold new staff member data
 				
 				try
 				{
 					//Grab data from text boxes
-					createStaff.setFirstName(ApplicationMainWindow.txtNewStaffFirstName.getText());//set objects data
-					createStaff.setLastName(ApplicationMainWindow.txtNewStaffLastName.getText());
-					createStaff.setAddress(ApplicationMainWindow.txtNewStaffAddress.getText());
-					createStaff.setPps(ApplicationMainWindow.txtNewStaffPPS.getText());
-					createStaff.setSalary(Double.parseDouble(ApplicationMainWindow.txtNewStaffSalary.getText()));
+					staffMember.setFirstName(ApplicationMainWindow.txtNewStaffFirstName.getText().trim());//set objects data
+					staffMember.setLastName(ApplicationMainWindow.txtNewStaffLastName.getText().trim());
+					staffMember.setAddress(ApplicationMainWindow.txtNewStaffAddress.getText().trim());
+					staffMember.setPps(ApplicationMainWindow.txtNewStaffPPS.getText().trim());
+					staffMember.setSalary(Double.parseDouble(ApplicationMainWindow.txtNewStaffSalary.getText().trim()));
 				
 					/*Return index of selected staff type from listHandler for specific combo box, 
 				  	pass it into getStaffType() to determine the staff type, then set new members staff type to it*/
 					staffType = getStaffTypeChar(listHandler.getCreateStaffMemberType());
-					createStaff.setStaffType(staffType);
+					staffMember.setStaffType(staffType);
 				
 					client.sendMessage(6);					//Send server a signal to indicate what we are doing
-					client.sendStaffDetails(createStaff);//send staff member object to the server
+					client.sendStaffDetails(staffMember);//send staff member object to the server
 					serverCreateStaffData = client.getServerStaffMessage(); //get a response 0 or 1 and 
 																			//if successful the new id
 					if(Integer.parseInt(serverCreateStaffData[1]) == 0)//if unsuccessful
@@ -376,7 +431,7 @@ public class ClientEventHandler implements ActionListener
 			case "FindStaffMember":
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchStaffEdit.getText());	//get the id
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchStaffEdit.getText().trim());	//get the id
 					
 					client.sendMessage(7);			//Send server a signal to indicate what we are doing
 					client.sendSearchID(id);		//send that id to the server to search for that staff member
@@ -419,26 +474,26 @@ public class ClientEventHandler implements ActionListener
 				//UPDATING A STAFF MEMBER (CLIENT SIDE)
 				//if action command is "UpdateStaffMember" 
 			case "UpdateStaffMember":
-				StaffMember updateStaff = new StaffMember();//create an object to hold the data
+				staffMember = new StaffMember();//create an object to hold the data
 				
 				try
 				{
 					//Retrieve the data from the relevant text fields and add set the object to the values
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchStaffEdit.getText());
-					updateStaff.setFirstName(ApplicationMainWindow.txtStaffUpdateFirstName.getText());
-					updateStaff.setLastName(ApplicationMainWindow.txtStaffUpdateLastName.getText());
-					updateStaff.setAddress(ApplicationMainWindow.txtStaffUpdateAddress.getText());
-					updateStaff.setPps(ApplicationMainWindow.txtStaffUpdatePPS.getText());
-					updateStaff.setSalary(Double.parseDouble(ApplicationMainWindow.txtStaffUpdateSalary.getText()));
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchStaffEdit.getText().trim());
+					staffMember.setFirstName(ApplicationMainWindow.txtStaffUpdateFirstName.getText().trim());
+					staffMember.setLastName(ApplicationMainWindow.txtStaffUpdateLastName.getText().trim());
+					staffMember.setAddress(ApplicationMainWindow.txtStaffUpdateAddress.getText().trim());
+					staffMember.setPps(ApplicationMainWindow.txtStaffUpdatePPS.getText().trim());
+					staffMember.setSalary(Double.parseDouble(ApplicationMainWindow.txtStaffUpdateSalary.getText().trim()));
 				
 					/*Return index of selected staff type from listHandler for specific combo box, 
 				  	pass it into getStaffType() to determine the staff type, the set users staff type to it*/
 					staffType = getStaffTypeChar(listHandler.getUpdateStaffMemberType());
-					updateStaff.setStaffType(staffType);
+					staffMember.setStaffType(staffType);
 				
 					client.sendMessage(8);	//Send server a signal to indicate what we are doing
 					client.sendSearchID(id);				//send id to search for staff member
-					client.sendStaffDetails(updateStaff);	//send object with data for the update
+					client.sendStaffDetails(staffMember);	//send object with data for the update
 					serverSignal = client.getServerSignal(); //get servers response
 				
 					if(serverSignal == 1)//if successful
@@ -495,33 +550,31 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "ShowAllStaff"
 			case "ShowAllStaff":
 				client.sendMessage(10);//send signal to server to indicate what we are doing
-				Object[][] staff;	  //2D array to hold staff members data
-				StaffMember member;   //object to hold each retrieved staff member 
 				
 				members = client.getStaffMemberList();//retrieve array list from server of all the staff members
 				
 				if(members.size() > 0)//if we have members in the array list
 				{
-					staff = new Object[members.size()][7];//create array to hold them
+					searchData = new Object[members.size()][7];//create array to hold them
 					
 					//loop over entire list of staff members
 					for(int row = 0; row < members.size(); ++row)//loop over each record
 					{
-						member = members.get(row); //get the object
+						staffMember = members.get(row); //get the object
 						
-						staff[row][0] = member.getId();				//pass it into an array
-						staff[row][1] = member.getFirstName();
-						staff[row][2] = member.getLastName();
-						staff[row][3] = member.getAddress();
-						staff[row][4] = member.getPps();
-						staff[row][5] = member.getSalary();
-						staff[row][6] = member.getStaffType();
+						searchData[row][0] = staffMember.getId();				//pass it into an array
+						searchData[row][1] = staffMember.getFirstName();
+						searchData[row][2] = staffMember.getLastName();
+						searchData[row][3] = staffMember.getAddress();
+						searchData[row][4] = staffMember.getPps();
+						searchData[row][5] = staffMember.getSalary();
+						searchData[row][6] = staffMember.getStaffType();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will used staff members 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(staff, staffColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, staffColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -550,11 +603,11 @@ public class ClientEventHandler implements ActionListener
 				//SEARCH FOR A STAFF MEMBER (CLIENT SIDE)
 				//if action command is "ViewSearchStaffMember"
 			case "ViewSearchStaffMember":
-				Object[][] retreivedMember = new Object[1][7]; //2D array to hold staff members data
+				searchData = new Object[1][7]; //2D array to hold staff members data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchStaffMember.getText());//get id entered
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchStaffMember.getText().trim());//get id entered .trim() removes whitespace
 					client.sendMessage(11);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send it to server so it can perform a search
 					serverSignal = client.getServerSignal();	//get servers response
@@ -569,17 +622,17 @@ public class ClientEventHandler implements ActionListener
 					{
 						staffMember = client.getStaffMember();//get the staff member from the server
 					
-						retreivedMember[0][0] = staffMember.getId();		//Pass its data into a 2D array
-						retreivedMember[0][1] = staffMember.getFirstName();
-						retreivedMember[0][2] = staffMember.getLastName();
-						retreivedMember[0][3] = staffMember.getAddress();
-						retreivedMember[0][4] = staffMember.getPps();
-						retreivedMember[0][5] = staffMember.getSalary();
-						retreivedMember[0][6] = staffMember.getStaffType();
+						searchData[0][0] = staffMember.getId();		//Pass its data into a 2D array
+						searchData[0][1] = staffMember.getFirstName();
+						searchData[0][2] = staffMember.getLastName();
+						searchData[0][3] = staffMember.getAddress();
+						searchData[0][4] = staffMember.getPps();
+						searchData[0][5] = staffMember.getSalary();
+						searchData[0][6] = staffMember.getStaffType();
 					
 						//Create a table with no editing that outputs the data
 						@SuppressWarnings("serial")
-						DefaultTableModel model = new DefaultTableModel(retreivedMember, staffColumnNames) 
+						DefaultTableModel model = new DefaultTableModel(searchData, staffColumnNames) 
 						{
 							public boolean isCellEditable(int rowIndex, int mColIndex) {
 								return false;
@@ -611,7 +664,7 @@ public class ClientEventHandler implements ActionListener
 			case "UploadFile":
 				client.sendMessage(12);//send server a signal to tell it what we are doing
 				
-				uploadFilePath = ApplicationMainWindow.txtUploadFile.getText();
+				uploadFilePath = ApplicationMainWindow.txtUploadFile.getText().trim(); //get path of file for uploading .trim removes any whitespace
 				uploadFilePath = uploadFilePath.replace('\\', '/');
 				File uploadFile = new File(uploadFilePath);	
 				
@@ -645,19 +698,22 @@ public class ClientEventHandler implements ActionListener
 					
 					if(serverSignal == 1)
 					{
+						//output relevant success message
 						JOptionPane.showMessageDialog(null, "The file: "+uploadName+" has been successfully uploaded to your online directory" ,
 								"Valid File Upload", JOptionPane.INFORMATION_MESSAGE);
 					}
 					else if(serverSignal == 0)
 					{
+						//output unsuccesful message
 						JOptionPane.showMessageDialog(null, "There appears to have been a problem with the upload - please try again" ,
 								"Invalid File Upload", JOptionPane.ERROR_MESSAGE);
 					}
 				}
-				else
+				else//if the file does not exist
 				{
 					client.sendMessage(-1);	//Send useless command to server allowing it to loop over and wait again
 					
+					//output unsuccesful message
 					JOptionPane.showMessageDialog(null, "This file does not exist, you may have entered the path incorrectly" ,
 							"Invalid File Upload", JOptionPane.ERROR_MESSAGE);
 				}
@@ -685,7 +741,7 @@ public class ClientEventHandler implements ActionListener
 			case "DownloadFile":
 				client.sendMessage(14);	//send signal to server to indicate what we are doing
 				InputStream inStream;										//InputStream object
-				downloadDestination = ApplicationMainWindow.txtDestDownloadFile.getText(); //get download path
+				downloadDestination = ApplicationMainWindow.txtDestDownloadFile.getText().trim(); //get download path
 				downloadDestination = downloadDestination.replace('\\', '/');
 				if(!downloadDestination.endsWith("/"))
 				{
@@ -746,8 +802,8 @@ public class ClientEventHandler implements ActionListener
 				client.sendMessage(15);//send signal to server to indicate what we are doing
 				File file; 
 				
-				usernameRecipient = ApplicationMainWindow.txtUsernameSendFile.getText();//username getting file
-				fileCompSend = ApplicationMainWindow.txtCompPathSendFile.getText(); //path of file for sending
+				usernameRecipient = ApplicationMainWindow.txtUsernameSendFile.getText().trim();//username getting file .trim removes whitespace
+				fileCompSend = ApplicationMainWindow.txtCompPathSendFile.getText().trim(); //path of file for sending
 				fileCompSend = fileCompSend.replace('\\', '/');
 					
 				file = new File(fileCompSend);//create file object of the file for sending
@@ -823,8 +879,8 @@ public class ClientEventHandler implements ActionListener
 				client.sendMessage(17);//send signal to tell server what we are doing
 				
 				//Get user recieving and the name of the file in online directory
-				usernameRecipient = ApplicationMainWindow.txtUsernameSendFileO.getText();
-				fileOnlineSend = ApplicationMainWindow.txtOnlineNameSendFile.getText();
+				usernameRecipient = ApplicationMainWindow.txtUsernameSendFileO.getText().trim(); //remove whitespace with .trim()
+				fileOnlineSend = ApplicationMainWindow.txtOnlineNameSendFile.getText().trim();
 				
 				//send recipient name and file name to server
 				client.sendMessage(usernameRecipient);
@@ -866,7 +922,7 @@ public class ClientEventHandler implements ActionListener
 				client.sendMessage(19);//send server a signal to tell it what we are doing
 				
 				//Get name of file to remove from online directory and send to the server
-				fileRemove = ApplicationMainWindow.txtRemoveFile.getText();
+				fileRemove = ApplicationMainWindow.txtRemoveFile.getText().trim();
 				client.sendMessage(fileRemove);
 				
 				serverSignal = client.getServerSignal();//get server response
@@ -885,23 +941,23 @@ public class ClientEventHandler implements ActionListener
 				//CREATING A NEW HOUSE, SENDING HOUSE DATA TO THE SERVER (CLIENT SIDE)
 				//if action command is "CreateNewHouse"
 			case "CreateNewHouse":
-				House newHouse = new House();	//create a house object
+				house = new House();	//create a house object
 			
 				//Get house data from text boxes
-				newHouse.setStreet(ApplicationMainWindow.txtNewHouseStreet.getText()); //set its data
-				newHouse.setTown(ApplicationMainWindow.txtNewHouseTown.getText());
-				newHouse.setCounty(ApplicationMainWindow.txtNewHouseCounty.getText());
+				house.setStreet(ApplicationMainWindow.txtNewHouseStreet.getText().trim()); //set its data and use .trim() to remove whitespace
+				house.setTown(ApplicationMainWindow.txtNewHouseTown.getText().trim());
+				house.setCounty(ApplicationMainWindow.txtNewHouseCounty.getText().trim());
 			
 				/*Return selected index of login combo box with getNewHouseType() then pass it into getHouseType
 			 	which contains a switch statement to determine the house type (defined bottom of class)*/ 
 				houseType = getHouseType(listHandler.getNewHouseType()); 
-				newHouse.setRentOrSale(houseType);
+				house.setRentOrSale(houseType);
 				
 				//Making sure user has selected a type of house
 				if(houseType == 'r' || houseType == 'b')
 				{	
 					client.sendMessage(20);//send server a signal to tell it what we are doing
-					client.sendHouseDetails(newHouse); //send house data
+					client.sendHouseDetails(house); //send house data
 					
 					serverSignal = client.getServerSignal(); //get server response
 				
@@ -927,7 +983,7 @@ public class ClientEventHandler implements ActionListener
 			case "FindHouse":
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchHouseEdit.getText());	//get the id
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchHouseEdit.getText().trim());	//get the id
 					client.sendMessage(21);			//send server a signal to tell it what we are doing
 					client.sendSearchID(id);		//send that id to the server to search for that staff member
 				
@@ -964,24 +1020,24 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "UpdateHouse"
 			case "UpdateHouse":
 				client.sendMessage(22);	//Send server a signal to indicate what we are doing
-				House updateHouse = new House();//create an object to hold the data
+				house = new House();//create an object to hold the data
 				
 				//Retrieve the data from the relevant text fields and add set the object to the values
-			    id = Integer.parseInt(ApplicationMainWindow.txtSearchHouseEdit.getText());
-			    updateHouse.setStreet(ApplicationMainWindow.txtUpdatedHouseStreet.getText());
-			    updateHouse.setTown(ApplicationMainWindow.txtUpdatedHouseTown.getText());
-			    updateHouse.setCounty(ApplicationMainWindow.txtUpdatedHouseCounty.getText());
+			    id = Integer.parseInt(ApplicationMainWindow.txtSearchHouseEdit.getText().trim());//.trim() removes whitespace
+			    house.setStreet(ApplicationMainWindow.txtUpdatedHouseStreet.getText().trim());
+			    house.setTown(ApplicationMainWindow.txtUpdatedHouseTown.getText().trim());
+			    house.setCounty(ApplicationMainWindow.txtUpdatedHouseCounty.getText().trim());
 			    
 			    /*Return index of selected staff type from listHandler for specific combo box, 
 				  pass it into getStaffType() to determine the house, the set house to it*/
 			    houseType = getHouseType(listHandler.getUpdateHouseType());
-			    updateHouse.setRentOrSale(houseType);
+			    house.setRentOrSale(houseType);
 			 
 			  //Making sure user has selected a type of house
 			    if(houseType == 'r' || houseType == 'b')
 				{	
 			    	client.sendSearchID(id);				//send id to search for house
-			    	client.sendHouseDetails(updateHouse);	//send object with data for the update
+			    	client.sendHouseDetails(house);	//send object with data for the update
 			    	serverSignal = client.getServerSignal(); //get servers response
 				
 			    	if(serverSignal == 1)//if successful
@@ -1008,7 +1064,7 @@ public class ClientEventHandler implements ActionListener
 			case "DeleteHouse":
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtDeleteHouse.getText());//get id for delete
+					id = Integer.parseInt(ApplicationMainWindow.txtDeleteHouse.getText().trim());//get id for delete
 					client.sendMessage(23);//Send server a signal to indicate what we are doing
 					client.sendSearchID(id);					//send the id
 					serverSignal = client.getServerSignal();	//get server response
@@ -1036,30 +1092,28 @@ public class ClientEventHandler implements ActionListener
 			//if action command is "ShowAllHouses"
 			case "ShowAllHouses":
 				client.sendMessage(24);//send signal to server to indicate what we are doing
-				Object[][] houses;	  //2D array to hold houses data
-				House houseMember;   //object to hold each retrieved houses 
 				
 				houseList = client.getHouseList();	//retrieve array list from server of all the houses
 				
 				if(houseList.size() > 0)//if we have members in the array list
 				{
-					houses = new Object[houseList.size()][5];//create array to hold them
+					searchData = new Object[houseList.size()][5];//create array to hold them
 					
 					for(int row = 0; row < houseList.size(); ++row)//loop over each record
 					{
-						houseMember = houseList.get(row); //get the object
+						house = houseList.get(row); //get the object
 						
-						houses[row][0] = houseMember.getId();				//pass it into an array
-						houses[row][1] = houseMember.getStreet();
-						houses[row][2] = houseMember.getTown();
-						houses[row][3] = houseMember.getCounty();
-						houses[row][4] = houseMember.getRentOrSale();
+						searchData[row][0] = house.getId();				//pass it into an array
+						searchData[row][1] = house.getStreet();
+						searchData[row][2] = house.getTown();
+						searchData[row][3] = house.getCounty();
+						searchData[row][4] = house.getRentOrSale();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use house (object) 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(houses, houseColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, houseColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -1088,11 +1142,11 @@ public class ClientEventHandler implements ActionListener
 				//SEARCH FOR A PARTICULAR HOUSE (CLIENT SIDE)
 				//if action command is "ViewSearchHouse"
 			case "ViewSearchHouse":
-				Object[][] retreivedHouse = new Object[1][5]; //2D array to hold house data
+				searchData = new Object[1][5]; //2D array to hold house data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchHouse.getText());//get id entered
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchHouse.getText().trim());//get id entered
 					client.sendMessage(25);//send signal to server to indicate what we are doing
 					client.sendSearchID(id);					//send it to server so it can perform a search
 					serverSignal = client.getServerSignal();	//get servers response
@@ -1107,15 +1161,15 @@ public class ClientEventHandler implements ActionListener
 					{
 						house = client.getHouseDetails();//get the house from the server
 					
-						retreivedHouse[0][0] = house.getId();		//Pass its data into a 2D array
-						retreivedHouse[0][1] = house.getStreet();
-						retreivedHouse[0][2] = house.getTown();
-						retreivedHouse[0][3] = house.getCounty();
-						retreivedHouse[0][4] = house.getRentOrSale();
+						searchData[0][0] = house.getId();		//Pass its data into a 2D array
+						searchData[0][1] = house.getStreet();
+						searchData[0][2] = house.getTown();
+						searchData[0][3] = house.getCounty();
+						searchData[0][4] = house.getRentOrSale();
 				
 						//Create a table with no editing that outputs the data
 						@SuppressWarnings("serial")
-						DefaultTableModel model = new DefaultTableModel(retreivedHouse, houseColumnNames) 
+						DefaultTableModel model = new DefaultTableModel(searchData, houseColumnNames) 
 						{
 							public boolean isCellEditable(int rowIndex, int mColIndex) {
 								return false;
@@ -1162,22 +1216,22 @@ public class ClientEventHandler implements ActionListener
 				//CREATE A RENT TRANSACTION (CLIENT SIDE)
 				//if action command is "CreateRentTransaction"
 			case "CreateRentTransaction":
-				RentableHouse newRentHouse = new RentableHouse();
+				rHouse = new RentableHouse();
 				
 				try
 				{
-					//Grab rent transaction data
-					newRentHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransRentHouseID.getText()));
-					newRentHouse.setFromDate(ApplicationMainWindow.txtTransStartDate.getText());
-					newRentHouse.setToDate(ApplicationMainWindow.txtTransEndDate.getText());
-					newRentHouse.setRate(Double.parseDouble(ApplicationMainWindow.txtTransMonthlyRate.getText()));
-					agentID = Integer.parseInt(ApplicationMainWindow.txtEstateAgentID.getText());
-					custID = Integer.parseInt(ApplicationMainWindow.txtRentCustID.getText());
+					//Grab rent transaction data using .trim() to remove any whitespace
+					rHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransRentHouseID.getText().trim()));
+					rHouse.setFromDate(ApplicationMainWindow.txtTransStartDate.getText().trim());
+					rHouse.setToDate(ApplicationMainWindow.txtTransEndDate.getText().trim());
+					rHouse.setRate(Double.parseDouble(ApplicationMainWindow.txtTransMonthlyRate.getText().trim()));
+					agentID = Integer.parseInt(ApplicationMainWindow.txtEstateAgentID.getText().trim());
+					custID = Integer.parseInt(ApplicationMainWindow.txtRentCustID.getText().trim());
 			
 					client.sendMessage(27);//send server a signal to tell it what we are doing
 					client.sendMessage(agentID);//send estate agent id
 					client.sendMessage(custID);//send customer id
-					client.sendRentableHouseDetails(newRentHouse);//send rentable house data
+					client.sendRentableHouseDetails(rHouse);//send rentable house data
 				
 					serverSignal = client.getServerSignal();	//get servers response
 				
@@ -1208,20 +1262,20 @@ public class ClientEventHandler implements ActionListener
 			//CREATE A BUY TRANSACTION (CLIENT SIDE)
 			//if action command is "CreateBuyTransaction"
 			case "CreateBuyTransaction":
-				SellableHouse newBuyHouse = new SellableHouse();
+				sHouse = new SellableHouse();//create sellable house object
 				
 				try
 				{
-					//grab sellable house data from text boxes
-					newBuyHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransBuyHouseID.getText()));
-					newBuyHouse.setCost(Double.parseDouble(ApplicationMainWindow.txtBuyCost.getText()));
-					agentID = Integer.parseInt(ApplicationMainWindow.txtBuyEstateAgentID.getText());
-					custID = Integer.parseInt(ApplicationMainWindow.txtBuyCustID.getText());
+					//grab sellable house data from text boxes using .trim() to remove whitespace
+					sHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransBuyHouseID.getText().trim()));
+					sHouse.setCost(Double.parseDouble(ApplicationMainWindow.txtBuyCost.getText().trim()));
+					agentID = Integer.parseInt(ApplicationMainWindow.txtBuyEstateAgentID.getText().trim());
+					custID = Integer.parseInt(ApplicationMainWindow.txtBuyCustID.getText().trim());
 				
 					client.sendMessage(28);//send server a signal to tell it what we are doing
 					client.sendMessage(agentID);//send estate id
 					client.sendMessage(custID);//send customer id
-					client.sendSellableHouseDetails(newBuyHouse);//send sellable house data
+					client.sendSellableHouseDetails(sHouse);//send sellable house data
 				
 					serverSignal = client.getServerSignal();	//get servers response
 				
@@ -1249,11 +1303,11 @@ public class ClientEventHandler implements ActionListener
 			//SEARCH FOR A PARTICULAR RENT TRANSACTION (CLIENT SIDE)
 			//if action command is "SearchUpdateRentTransaction"
 			case "SearchUpdateRentTransaction":
-				RentableHouse retreivedRHouse = new RentableHouse();//holds entered rentable house data
+				rHouse = new RentableHouse();//holds entered rentable house data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateRentID.getText());	//get the id
+					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateRentID.getText().trim());	//get the id
 					client.sendMessage(29);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);		//send that id to the server to search for that rent transaction
 				
@@ -1267,16 +1321,16 @@ public class ClientEventHandler implements ActionListener
 					}
 					else if(serverSignal == 1)//otherwise
 					{
-						retreivedRHouse = client.getRentableHouseDetails();
+						rHouse = client.getRentableHouseDetails();
 						agentID = client.getIntFromServer();
 						custID = client.getIntFromServer();
 					
 						//Here we set the text fields to the retrieved rent transaction attributes
-						ApplicationMainWindow.txtTransUpdateHouseRentID.setText(Integer.toString(retreivedRHouse.getId()));
-						ApplicationMainWindow.txtTransUpdateStartDate.setText(retreivedRHouse.getFromDate());
-						ApplicationMainWindow.txtTransUpdateEndDate.setText(retreivedRHouse.getToDate());
-						ApplicationMainWindow.txtTransUpdateMonthlyRate.setText(Double.toString(retreivedRHouse.getRate()));
-						ApplicationMainWindow.txtUpdateEstateAgentID.setText(Double.toString(retreivedRHouse.getRate()));
+						ApplicationMainWindow.txtTransUpdateHouseRentID.setText(Integer.toString(rHouse.getId()));
+						ApplicationMainWindow.txtTransUpdateStartDate.setText(rHouse.getFromDate());
+						ApplicationMainWindow.txtTransUpdateEndDate.setText(rHouse.getToDate());
+						ApplicationMainWindow.txtTransUpdateMonthlyRate.setText(Double.toString(rHouse.getRate()));
+						ApplicationMainWindow.txtUpdateEstateAgentID.setText(Double.toString(rHouse.getRate()));
 						ApplicationMainWindow.txtUpdateEstateAgentID.setText(Integer.toString(agentID));
 						ApplicationMainWindow.txtUpdateRentCustID.setText(Integer.toString(custID));
 						ApplicationMainWindow.btnUpdateRentTrans.setEnabled(true);//now the update button is enabled
@@ -1297,22 +1351,22 @@ public class ClientEventHandler implements ActionListener
 				//UPDATE A RENT TRANSACTION (CLIENT SIDE)
 				//if action command is "UpdateRentTransaction"
 			case "UpdateRentTransaction":
-				RentableHouse updateRHouse = new RentableHouse(); //holds the entered rentable house data
+				rHouse = new RentableHouse(); //holds the entered rentable house data
 				
 				try
 				{
-					//Grab rent house data from text boxes
-					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateRentID.getText());
-					updateRHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransUpdateHouseRentID.getText()));
-					updateRHouse.setFromDate(ApplicationMainWindow.txtTransUpdateStartDate.getText());
-					updateRHouse.setToDate(ApplicationMainWindow.txtTransUpdateEndDate.getText());
-					updateRHouse.setRate(Double.parseDouble(ApplicationMainWindow.txtTransUpdateMonthlyRate.getText()));
-					agentID = Integer.parseInt(ApplicationMainWindow.txtUpdateEstateAgentID.getText());
-					custID = Integer.parseInt(ApplicationMainWindow.txtUpdateRentCustID.getText());
+					//Grab rent house data from text boxes using .trim() to remove whitespace
+					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateRentID.getText().trim());
+					rHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransUpdateHouseRentID.getText().trim()));
+					rHouse.setFromDate(ApplicationMainWindow.txtTransUpdateStartDate.getText().trim());
+					rHouse.setToDate(ApplicationMainWindow.txtTransUpdateEndDate.getText().trim());
+					rHouse.setRate(Double.parseDouble(ApplicationMainWindow.txtTransUpdateMonthlyRate.getText().trim()));
+					agentID = Integer.parseInt(ApplicationMainWindow.txtUpdateEstateAgentID.getText().trim());
+					custID = Integer.parseInt(ApplicationMainWindow.txtUpdateRentCustID.getText().trim());
 				
 					client.sendMessage(30);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);		//send that id to the server to search for that rent transaction
-					client.sendRentableHouseDetails(updateRHouse);
+					client.sendRentableHouseDetails(rHouse);
 					client.sendMessage(agentID);
 					client.sendMessage(custID);
 				
@@ -1344,11 +1398,11 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "SearchUpdateBuyTransaction"
 			case "SearchUpdateBuyTransaction":
 				client.sendMessage(31);//send server a signal to tell it what we are doing
-				SellableHouse sellRetreievedHouse = new SellableHouse(); //holds sellable house data
+				sHouse = new SellableHouse(); //holds sellable house data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateBuyID.getText());	//get the id
+					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateBuyID.getText().trim());	//get the id
 					client.sendSearchID(id);		//send that id to the server to search for that buy member
 				
 					serverSignal = client.getServerSignal(); //get response from the server
@@ -1362,13 +1416,13 @@ public class ClientEventHandler implements ActionListener
 					else if(serverSignal == 1)//otherwise
 					{
 						//get sellable house, estate agent and customer id data from server
-						sellRetreievedHouse = client.getSellableHouseDetails();
+						sHouse = client.getSellableHouseDetails();
 						agentID = client.getIntFromServer();
 						custID = client.getIntFromServer();
 					
 						//Here we set the text fields to the retrieved rent transaction attributes
-						ApplicationMainWindow.txtTransUpdateBuyHouseID.setText(Integer.toString(sellRetreievedHouse.getId()));
-						ApplicationMainWindow.txtUpdateBuyCost.setText(Double.toString(sellRetreievedHouse.getCost()));
+						ApplicationMainWindow.txtTransUpdateBuyHouseID.setText(Integer.toString(sHouse.getId()));
+						ApplicationMainWindow.txtUpdateBuyCost.setText(Double.toString(sHouse.getCost()));
 						ApplicationMainWindow.txtUpdateBuyEstateAgentID.setText(Integer.toString(agentID));
 						ApplicationMainWindow.txtUpdateBuyCustID.setText(Integer.toString(custID));
 						ApplicationMainWindow.btnUpdateBuyTrans.setEnabled(true);//now the update button is enabled
@@ -1388,20 +1442,20 @@ public class ClientEventHandler implements ActionListener
 				//UPDATE A BUY TRANSACTION (CLIENT SIDE)
 				//if action command is "UpdateBuyTransaction"
 			case "UpdateBuyTransaction":
-				SellableHouse updateSHouse = new SellableHouse(); //holds sellable house data
+				sHouse = new SellableHouse(); //holds sellable house data
 				
 				try
 				{
-					//grab sellable house data from text boxes
-					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateBuyID.getText());
-					updateSHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransUpdateBuyHouseID.getText()));
-					updateSHouse.setCost(Double.parseDouble(ApplicationMainWindow.txtUpdateBuyCost.getText()));
-					agentID = Integer.parseInt(ApplicationMainWindow.txtUpdateBuyEstateAgentID.getText());
-					custID = Integer.parseInt(ApplicationMainWindow.txtUpdateBuyCustID.getText());
+					//grab sellable house data from text boxes using .trim to remove whitespace
+					id = Integer.parseInt(ApplicationMainWindow.txtTransUpdateBuyID.getText().trim());
+					sHouse.setId(Integer.parseInt(ApplicationMainWindow.txtTransUpdateBuyHouseID.getText().trim()));
+					sHouse.setCost(Double.parseDouble(ApplicationMainWindow.txtUpdateBuyCost.getText().trim()));
+					agentID = Integer.parseInt(ApplicationMainWindow.txtUpdateBuyEstateAgentID.getText().trim());
+					custID = Integer.parseInt(ApplicationMainWindow.txtUpdateBuyCustID.getText().trim());
 				
 					client.sendMessage(32);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);		//send that id to the server to search for that buy transaction
-					client.sendSellableHouseDetails(updateSHouse); //send data to server
+					client.sendSellableHouseDetails(sHouse); //send data to server
 					client.sendMessage(agentID);
 					client.sendMessage(custID);
 				
@@ -1409,14 +1463,14 @@ public class ClientEventHandler implements ActionListener
 				
 					if(serverSignal == 0)//if unsuccessful
 					{
-						//say could not update rent transaction
+						//say could not update buy transaction
 						JOptionPane.showMessageDialog(null, "Invalid - Could not update buy Transaction\n"+
 														"You may have entered some improper data - please try again ",
 														"Invalid Buy Transaction Update", JOptionPane.ERROR_MESSAGE);
 					}
 					else if(serverSignal == 1)//otherwise
 					{
-						//say could not update rent transaction
+						//say could not update buy transaction
 						JOptionPane.showMessageDialog(null, "Valid - Successful update of buy Transaction\n"+
 														"This Buy transaction was updated ",
 														"Invalid Buy Transaction Update", JOptionPane.INFORMATION_MESSAGE);
@@ -1433,7 +1487,7 @@ public class ClientEventHandler implements ActionListener
 			case "DeleteSellTransaction":
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtDeleteSellTransaction.getText());//get id for delete
+					id = Integer.parseInt(ApplicationMainWindow.txtDeleteSellTransaction.getText().trim());//get id for delete
 					client.sendMessage(33);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send the id
 					serverSignal = client.getServerSignal();	//get server response
@@ -1462,7 +1516,7 @@ public class ClientEventHandler implements ActionListener
 			case "DeleteRentTransaction":
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtDeleteRentTransaction.getText());//get id for delete
+					id = Integer.parseInt(ApplicationMainWindow.txtDeleteRentTransaction.getText().trim());//get id for delete
 					client.sendMessage(34);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send the id
 					serverSignal = client.getServerSignal();	//get server response
@@ -1489,8 +1543,6 @@ public class ClientEventHandler implements ActionListener
 			case "ViewAllRentTransaction":
 				//VIEWING ALL RENT HOUSE TRANSACTION(CLIENT SIDE)
 				client.sendMessage(35);//send server a signal to tell it what we are doing
-				Object[][] rentTransactions;	  //2D array to hold rent transactions data
-				RentableHouse rHouseMember;   //object to hold each retrieved rentable house 
 				
 				rentIDs = client.getIDList();		//get id list of rent transactions from server
 				rHouseList = client.getRentableHouseList();	//retrieve array list from server of all the houses
@@ -1501,25 +1553,25 @@ public class ClientEventHandler implements ActionListener
 				if(rHouseList.size() > 0 && rentIDs.size() > 0 && 
 						estateAgentIDs.size() > 0 && custIDs.size() > 0)
 				{
-					rentTransactions = new Object[rHouseList.size()][7];//create array to hold them
+					searchData = new Object[rHouseList.size()][7];//create array to hold them
 					
 					for(int row = 0; row < rHouseList.size(); ++row)//loop over each record
 					{
 						//add each record to the 2D array
-						rentTransactions[row][0] = rentIDs.get(row);
-						rHouseMember = rHouseList.get(row);
-						rentTransactions[row][1] = rHouseMember.getId();
-						rentTransactions[row][2] = rHouseMember.getFromDate();
-						rentTransactions[row][3] = rHouseMember.getToDate();
-						rentTransactions[row][4] = rHouseMember.getRate();
-						rentTransactions[row][5] = estateAgentIDs.get(row);
-						rentTransactions[row][6] = custIDs.get(row);
+						searchData[row][0] = rentIDs.get(row);
+						rHouse = rHouseList.get(row);	//get house object from the list
+						searchData[row][1] = rHouse.getId();//pass its data into an array
+						searchData[row][2] = rHouse.getFromDate();
+						searchData[row][3] = rHouse.getToDate();
+						searchData[row][4] = rHouse.getRate();
+						searchData[row][5] = estateAgentIDs.get(row);
+						searchData[row][6] = custIDs.get(row);
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use house (object) 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(rentTransactions, rentTransactionColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, rentTransactionColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -1527,8 +1579,8 @@ public class ClientEventHandler implements ActionListener
 				    };
 				    
 				    //set the tables attributes
-				    ApplicationMainWindow.tblShowRentTransactions = new JTable(model);
-				    ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowRentTransactions);
+				    ApplicationMainWindow.tblShowTransactions = new JTable(model);
+				    ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowTransactions);
 				    ApplicationMainWindow.scr1Transactions.setLocation(50, 120);
 				    ApplicationMainWindow.scr1Transactions.setSize(900, 370);
 				    ApplicationMainWindow.scr1Transactions.setVisible(true);
@@ -1548,12 +1600,12 @@ public class ClientEventHandler implements ActionListener
 			//SEARCH FOR A PARTICULAR RENT TRANSACTION (CLIENT SIDE)
 			//if action command is "SearchRentTransaction"
 			case "SearchRentTransaction":
-				Object[][] retreivedRentTransaction = new Object[1][7]; //2D array to hold house data
-				RentableHouse foundRentTrans;   //object to hold each retrieved rentable house 
+				searchData = new Object[1][7]; //2D array to hold house data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchViewRentTrans.getText());//get id entered
+					//use .trim for whitespace
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchViewRentTrans.getText().trim());//get id entered
 					client.sendMessage(36);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send it to server so it can perform a search
 				
@@ -1568,18 +1620,18 @@ public class ClientEventHandler implements ActionListener
 					else if(serverSignal == 1)//otherwise
 					{	
 						//add retrieved rent ransaction to 2D array row
-						retreivedRentTransaction[0][0] = client.getIntFromServer();
-						foundRentTrans = client.getRentableHouseDetails();
-						retreivedRentTransaction[0][1] = foundRentTrans.getId();
-						retreivedRentTransaction[0][2] = foundRentTrans.getFromDate();
-						retreivedRentTransaction[0][3] = foundRentTrans.getToDate();
-						retreivedRentTransaction[0][4] = foundRentTrans.getRate();
-						retreivedRentTransaction[0][5] = client.getIntFromServer();
-						retreivedRentTransaction[0][6] = client.getIntFromServer();
+						searchData[0][0] = client.getIntFromServer();
+						rHouse = client.getRentableHouseDetails();
+						searchData[0][1] = rHouse.getId();
+						searchData[0][2] = rHouse.getFromDate();
+						searchData[0][3] = rHouse.getToDate();
+						searchData[0][4] = rHouse.getRate();
+						searchData[0][5] = client.getIntFromServer();
+						searchData[0][6] = client.getIntFromServer();
 		
 						//Create a table with no editing that outputs the data
 						@SuppressWarnings("serial")
-						DefaultTableModel model = new DefaultTableModel(retreivedRentTransaction, rentTransactionColumnNames) 
+						DefaultTableModel model = new DefaultTableModel(searchData, rentTransactionColumnNames) 
 						{
 							public boolean isCellEditable(int rowIndex, int mColIndex) {
 								return false;
@@ -1587,8 +1639,8 @@ public class ClientEventHandler implements ActionListener
 						};
 				    
 						//set the tables attributes
-						ApplicationMainWindow.tblShowRentTransactions = new JTable(model);
-						ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowRentTransactions);
+						ApplicationMainWindow.tblShowTransactions = new JTable(model);
+						ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowTransactions);
 						ApplicationMainWindow.scr1Transactions.setLocation(50, 120);
 						ApplicationMainWindow.scr1Transactions.setSize(900, 370);
 						ApplicationMainWindow.scr1Transactions.setVisible(true);
@@ -1609,8 +1661,6 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "ViewAllBuyTransaction"
 			case "ViewAllBuyTransaction":
 				client.sendMessage(37);//send server a signal to tell it what we are doing
-				Object[][] buyTransactions;	  //2D array to hold rent transactions data
-				SellableHouse bHouseMember;   //object to hold each retrieved buyable house 
 				
 				buyIDs = client.getIDList();
 				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
@@ -1621,23 +1671,23 @@ public class ClientEventHandler implements ActionListener
 				if(sHouseList.size() > 0 && buyIDs.size() > 0 && 
 						estateAgentIDs.size() > 0 && custIDs.size() > 0)
 				{
-					buyTransactions = new Object[sHouseList.size()][5];//create array to hold them
+					searchData = new Object[sHouseList.size()][5];//create array to hold them
 					
 					for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
 					{
 						//add each recod to 2D array
-						buyTransactions[row][0] = buyIDs.get(row);
-						bHouseMember = sHouseList.get(row);
-						buyTransactions[row][1] = bHouseMember.getId();
-						buyTransactions[row][2] = bHouseMember.getCost();
-						buyTransactions[row][3] = estateAgentIDs.get(row);
-						buyTransactions[row][4] = custIDs.get(row);
+						searchData[row][0] = buyIDs.get(row);
+						sHouse = sHouseList.get(row);//get sellable house object from list
+						searchData[row][1] = sHouse.getId();//pass objects data into an array
+						searchData[row][2] = sHouse.getCost();
+						searchData[row][3] = estateAgentIDs.get(row);
+						searchData[row][4] = custIDs.get(row);
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use house (object) 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(buyTransactions,  buyTransactionColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData,  buyTransactionColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -1645,8 +1695,8 @@ public class ClientEventHandler implements ActionListener
 				    };
 				    
 				    //set the tables attributes
-				    ApplicationMainWindow.tblShowRentTransactions = new JTable(model);
-				    ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowRentTransactions);
+				    ApplicationMainWindow.tblShowTransactions = new JTable(model);
+				    ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowTransactions);
 				    ApplicationMainWindow.scr1Transactions.setLocation(50, 120);
 				    ApplicationMainWindow.scr1Transactions.setSize(900, 370);
 				    ApplicationMainWindow.scr1Transactions.setVisible(true);
@@ -1666,12 +1716,11 @@ public class ClientEventHandler implements ActionListener
 				//SEARCH FOR A PARTICULAR BUY TRANSACTION (CLIENT SIDE)
 				//if action command is "SearchBuyTransaction"
 			case "SearchBuyTransaction":
-				Object[][] retreivedBuyTransaction = new Object[1][5]; //2D array to hold house data
-				SellableHouse foundBuyTrans;   //object to hold each retrieved sellable house 
+				searchData = new Object[1][5]; //2D array to hold house data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchViewBuyTrans.getText());//get id entered
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchViewBuyTrans.getText().trim());//get id entered
 					client.sendMessage(38);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send it to server so it can perform a search
 				
@@ -1685,16 +1734,16 @@ public class ClientEventHandler implements ActionListener
 					}
 					else if(serverSignal == 1)//otherwise
 					{
-						retreivedBuyTransaction[0][0] = client.getIntFromServer();
-						foundBuyTrans = client.getSellableHouseDetails();
-						retreivedBuyTransaction[0][1] = foundBuyTrans.getId();
-						retreivedBuyTransaction[0][2] = foundBuyTrans.getCost();
-						retreivedBuyTransaction[0][3] = client.getIntFromServer();
-						retreivedBuyTransaction[0][4] = client.getIntFromServer();
+						searchData[0][0] = client.getIntFromServer();
+						sHouse = client.getSellableHouseDetails();
+						searchData[0][1] = sHouse.getId();
+						searchData[0][2] = sHouse.getCost();
+						searchData[0][3] = client.getIntFromServer();
+						searchData[0][4] = client.getIntFromServer();
 		
 						//Create a table with no editing that outputs the data
 						@SuppressWarnings("serial")
-						DefaultTableModel model = new DefaultTableModel(retreivedBuyTransaction, buyTransactionColumnNames) 
+						DefaultTableModel model = new DefaultTableModel(searchData, buyTransactionColumnNames) 
 						{
 							public boolean isCellEditable(int rowIndex, int mColIndex) {
 								return false;
@@ -1702,8 +1751,8 @@ public class ClientEventHandler implements ActionListener
 						};
 				    
 						//set the tables attributes
-						ApplicationMainWindow.tblShowRentTransactions = new JTable(model);
-						ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowRentTransactions);
+						ApplicationMainWindow.tblShowTransactions = new JTable(model);
+						ApplicationMainWindow.scr1Transactions = new JScrollPane(ApplicationMainWindow.tblShowTransactions);
 						ApplicationMainWindow.scr1Transactions.setLocation(50, 120);
 						ApplicationMainWindow.scr1Transactions.setSize(900, 370);
 						ApplicationMainWindow.scr1Transactions.setVisible(true);
@@ -1725,14 +1774,14 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "CreateNewCustomer"
 			case "CreateNewCustomer":
 				client.sendMessage(39);//send server a signal to tell it what we are doing
-				Customer newCustomer = new Customer();//customer object to hold customer data
+				customer = new Customer();//customer object to hold customer data
 				
-				//Grab customer data from text boxes
-				newCustomer.setfName(ApplicationMainWindow.txtNewCustomerNameF.getText());
-				newCustomer.setlName(ApplicationMainWindow.txtNewCustomerNameL.getText());
-				newCustomer.setAddress(ApplicationMainWindow.txtNewCustomerAddress.getText());
+				//Grab customer data from text boxes using .trim to remove any whitespace
+				customer.setfName(ApplicationMainWindow.txtNewCustomerNameF.getText().trim());
+				customer.setlName(ApplicationMainWindow.txtNewCustomerNameL.getText().trim());
+				customer.setAddress(ApplicationMainWindow.txtNewCustomerAddress.getText().trim());
 		
-				client.sendCustomerDetails(newCustomer);//send customer object with its data
+				client.sendCustomerDetails(customer);//send customer object with its data
 				
 				serverSignal = client.getServerSignal();	//get servers response
 				
@@ -1755,7 +1804,7 @@ public class ClientEventHandler implements ActionListener
 			case "DeleteCustomer":
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtDeleteCustomer.getText());//get id for delete
+					id = Integer.parseInt(ApplicationMainWindow.txtDeleteCustomer.getText().trim());//get id for delete
 					client.sendMessage(40);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send the id
 				
@@ -1784,11 +1833,11 @@ public class ClientEventHandler implements ActionListener
 				//FINDING A CUSTOMER (CLIENT SIDE)
 				//action command is "FindCustomer
 			case "FindCustomer":
-				Customer foundCustomer = new Customer(); //customer object to hold found customer data
+				customer = new Customer(); //customer object to hold found customer data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchCustomerEdit.getText());	//get the id
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchCustomerEdit.getText().trim());	//get the id
 					client.sendMessage(41);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);		//send that id to the server to search for that customer
 			
@@ -1802,12 +1851,12 @@ public class ClientEventHandler implements ActionListener
 					}
 					else if(serverSignal == 1)//otherwise
 					{
-						foundCustomer = client.getCustomerDetails();
+						customer = client.getCustomerDetails();
 				
 						//Here we set the text fields to the retrieved customer attributes
-						ApplicationMainWindow.txtCustomerUpdateFirstName.setText(foundCustomer.getfName());
-						ApplicationMainWindow.txtCustomerUpdateLastName.setText(foundCustomer.getlName());
-						ApplicationMainWindow.txtCustomerUpdateAddress.setText(foundCustomer.getAddress());
+						ApplicationMainWindow.txtCustomerUpdateFirstName.setText(customer.getfName());
+						ApplicationMainWindow.txtCustomerUpdateLastName.setText(customer.getlName());
+						ApplicationMainWindow.txtCustomerUpdateAddress.setText(customer.getAddress());
 						ApplicationMainWindow.btnUpdateCustomer.setEnabled(true);//now the update button is enabled
 						ApplicationMainWindow.txtSearchCustomerEdit.setEditable(false);//cannot edit text field holding the id
 				
@@ -1827,17 +1876,16 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "UpdateCustomer"
 			case "UpdateCustomer":
 				client.sendMessage(42);//send server a signal to tell it what we are doing
+				customer = new Customer(); //customer object holds update customer data
 				
-				Customer updateCustomer = new Customer(); //customer object holds update customer data
-				
-				//Grab update customer data from text boxes
-				id = Integer.parseInt(ApplicationMainWindow.txtSearchCustomerEdit.getText());
-				updateCustomer.setfName(ApplicationMainWindow.txtCustomerUpdateFirstName.getText());
-				updateCustomer.setlName(ApplicationMainWindow.txtCustomerUpdateLastName.getText());
-				updateCustomer.setAddress(ApplicationMainWindow.txtCustomerUpdateAddress.getText());
+				//Grab update customer data from text boxes, using .trim to remove whitespace
+				id = Integer.parseInt(ApplicationMainWindow.txtSearchCustomerEdit.getText().trim());
+				customer.setfName(ApplicationMainWindow.txtCustomerUpdateFirstName.getText().trim());
+				customer.setlName(ApplicationMainWindow.txtCustomerUpdateLastName.getText().trim());
+				customer.setAddress(ApplicationMainWindow.txtCustomerUpdateAddress.getText().trim());
 				
 				client.sendSearchID(id);		//send that id to the server to search for that customer
-				client.sendCustomerDetails(updateCustomer); //send customer object to the server
+				client.sendCustomerDetails(customer); //send customer object to the server
 				
 				serverSignal = client.getServerSignal(); //get response from the server
 				
@@ -1860,29 +1908,27 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "ShowAllCustomers"
 			case "ShowAllCustomers":
 				client.sendMessage(43);//send server a signal to tell it what we are doing
-				Object[][] customers;	  //2D array to hold customers data
-				Customer customer;   //object to hold each retrieved customer
 				
 				customersList = client.getCustomerList();//retrieve array list from server of all the customers
 				
 				if(customersList.size() > 0)//if we have customers in the array list
 				{
-					customers = new Object[customersList.size()][4];//create array to hold them
+					searchData = new Object[customersList.size()][4];//create array to hold them
 					
 					for(int row = 0; row < customersList.size(); ++row)//loop over each record
 					{
 						customer = customersList.get(row); //get the object
 						
-						customers[row][0] = customer.getCustID();				//pass it into an array
-						customers[row][1] = customer.getfName();
-						customers[row][2] = customer.getlName();
-						customers[row][3] = customer.getAddress();
+						searchData[row][0] = customer.getCustID();				//pass it into an array
+						searchData[row][1] = customer.getfName();
+						searchData[row][2] = customer.getlName();
+						searchData[row][3] = customer.getAddress();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will used customer 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(customers, customerColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, customerColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -1911,12 +1957,11 @@ public class ClientEventHandler implements ActionListener
 				//SEARCH FOR A PARTICULAR CUSTOMER
 				//if action command is "ViewSearchCustomer"
 			case "ViewSearchCustomer":
-				Object[][] retreivedCustomer = new Object[1][5]; //2D array to customer data
-				Customer singleRetrievedCustomer;   //object to hold each retrieved customer
+				searchData = new Object[1][5]; //2D array to customer data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchCustomer.getText());//get id entered
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchCustomer.getText().trim());//get id entered
 					client.sendMessage(44);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send it to server so it can perform a search
 				
@@ -1930,17 +1975,17 @@ public class ClientEventHandler implements ActionListener
 					}
 					else if(serverSignal == 1)//otherwise
 					{
-						singleRetrievedCustomer = client.getCustomerDetails();//get customer from server
+						customer = client.getCustomerDetails();//get customer from server
 					
 						//add to a 2D array
-						retreivedCustomer[0][0] = singleRetrievedCustomer.getCustID();				//pass it into an array
-						retreivedCustomer[0][1] = singleRetrievedCustomer.getfName();
-						retreivedCustomer[0][2] = singleRetrievedCustomer.getlName();
-						retreivedCustomer[0][3] = singleRetrievedCustomer.getAddress();
+						searchData[0][0] = customer.getCustID();				//pass it into an array
+						searchData[0][1] = customer.getfName();
+						searchData[0][2] = customer.getlName();
+						searchData[0][3] = customer.getAddress();
 		
 						//Create a table with no editing that outputs the data
 						@SuppressWarnings("serial")
-						DefaultTableModel model = new DefaultTableModel(retreivedCustomer, customerColumnNames) 
+						DefaultTableModel model = new DefaultTableModel(searchData, customerColumnNames) 
 						{
 							public boolean isCellEditable(int rowIndex, int mColIndex) {
 								return false;
@@ -1970,21 +2015,23 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "CreateNewReminder"
 			case "CreateNewReminder":
 				client.sendMessage(45);					//send server a signal to tell it what we are doing
-				Reminder newReminder = new Reminder();  //create reminder object
-				//set objects data from user input
-				newReminder.setSubject(ApplicationMainWindow.txtCreateReminderSubject.getText());
-				newReminder.setDesc(ApplicationMainWindow.txtCreateReminderDesc.getText());
-				newReminder.setDate(ApplicationMainWindow.txtCreateReminderDate.getText());
-				newReminder.setTime(ApplicationMainWindow.txtCreateReminderTime.getText());
+				reminder = new Reminder();  //create reminder object
 				
-				client.sendReminderDetails(newReminder);//send reminder object with data to the server
+				//set objects data from user input, using .trim to remove whitespace
+				reminder.setSubject(ApplicationMainWindow.txtCreateReminderSubject.getText().trim());
+				reminder.setDesc(ApplicationMainWindow.txtCreateReminderDesc.getText().trim());
+				reminder.setDate(ApplicationMainWindow.txtCreateReminderDate.getText().trim());
+				reminder.setTime(ApplicationMainWindow.txtCreateReminderTime.getText().trim());
+				
+				client.sendReminderDetails(reminder);//send reminder object with data to the server
 				
 				serverSignal = client.getServerSignal();//get signal from server indicating success or not
 				
 				if(serverSignal == 0)//if unsuccessful
 				{
 					//output relevant dialog box
-					JOptionPane.showMessageDialog(null, "Invalid Entry, could not create reminder" ,
+					JOptionPane.showMessageDialog(null, "Invalid Entry, could not create reminder\n" +
+							"IMPORTANT - The Subject field can only contain one word - No Spaces!",
 							"Invalid Input Data", JOptionPane.ERROR_MESSAGE);
 				}
 				else if(serverSignal == 1)//if success
@@ -1997,11 +2044,11 @@ public class ClientEventHandler implements ActionListener
 				//FINDING A REMINDER (CLIENT SIDE)
 				//action command is "FindReminder
 			case "FindReminder":
-				Reminder foundReminder = new Reminder(); //customer object to hold found reminder data
+				reminder = new Reminder(); //customer object to hold found reminder data
 				
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtSearchReminderEdit.getText());	//get the id
+					id = Integer.parseInt(ApplicationMainWindow.txtSearchReminderEdit.getText().trim());	//get the id
 					client.sendMessage(46);			//send server a signal to tell it what we are doing
 					client.sendSearchID(id);		//send that id to the server to search for that reminder
 			
@@ -2015,13 +2062,13 @@ public class ClientEventHandler implements ActionListener
 					}
 					else if(serverSignal == 1)//otherwise
 					{
-						foundReminder = client.getReminderDetails();
+						reminder = client.getReminderDetails();
 				
 						//Here we set the text fields to the retrieved customer attributes
-						ApplicationMainWindow.txtUpdateReminderDate.setText(foundReminder.getDate());
-						ApplicationMainWindow.txtUpdateReminderTime.setText(foundReminder.getTime());
-						ApplicationMainWindow.txtUpdateReminderSubject.setText(foundReminder.getSubject());
-						ApplicationMainWindow.txtUpdateReminderDesc.setText(foundReminder.getDesc());
+						ApplicationMainWindow.txtUpdateReminderDate.setText(reminder.getDate());
+						ApplicationMainWindow.txtUpdateReminderTime.setText(reminder.getTime());
+						ApplicationMainWindow.txtUpdateReminderSubject.setText(reminder.getSubject());
+						ApplicationMainWindow.txtUpdateReminderDesc.setText(reminder.getDesc());
 						ApplicationMainWindow.btnUpdateReminder.setEnabled(true);//now the update button is enabled
 						ApplicationMainWindow.txtSearchReminderEdit.setEditable(false);//cannot edit text field holding the id
 				
@@ -2042,17 +2089,17 @@ public class ClientEventHandler implements ActionListener
 			case "UpdateReminder":
 				client.sendMessage(47);//send server a signal to tell it what we are doing
 				
-				Reminder updateReminder = new Reminder(); //reminder object holds update reminder data
+				reminder = new Reminder(); //reminder object holds update reminder data
 				
-				//Grab update reminder data from text boxes
-				id = Integer.parseInt(ApplicationMainWindow.txtSearchReminderEdit.getText());
-				updateReminder.setDate(ApplicationMainWindow.txtUpdateReminderDate.getText());
-				updateReminder.setTime(ApplicationMainWindow.txtUpdateReminderTime.getText());
-				updateReminder.setSubject(ApplicationMainWindow.txtUpdateReminderSubject.getText());
-				updateReminder.setDesc(ApplicationMainWindow.txtUpdateReminderDesc.getText());
+				//Grab update reminder data from text boxes, using .trim to remove any whitespace
+				id = Integer.parseInt(ApplicationMainWindow.txtSearchReminderEdit.getText().trim());
+				reminder.setDate(ApplicationMainWindow.txtUpdateReminderDate.getText().trim());
+				reminder.setTime(ApplicationMainWindow.txtUpdateReminderTime.getText().trim());
+				reminder.setSubject(ApplicationMainWindow.txtUpdateReminderSubject.getText().trim());
+				reminder.setDesc(ApplicationMainWindow.txtUpdateReminderDesc.getText().trim());
 				
 				client.sendSearchID(id);		//send that id to the server to search for that reminder
-				client.sendReminderDetails(updateReminder); //send reminder object to the server
+				client.sendReminderDetails(reminder); //send reminder object to the server
 				
 				serverSignal = client.getServerSignal(); //get response from the server
 				
@@ -2060,7 +2107,7 @@ public class ClientEventHandler implements ActionListener
 				{
 					//say could not update rent transaction
 					JOptionPane.showMessageDialog(null, "Invalid - Could not update Reminder\n"+
-														"You may have entered some improper data - please try again ",
+														"You may have entered some improper data - please try again\n",
 							"Invalid Customer Update", JOptionPane.ERROR_MESSAGE);
 				}
 				else if(serverSignal == 1)//otherwise
@@ -2076,7 +2123,7 @@ public class ClientEventHandler implements ActionListener
 			case "DeleteReminder":
 				try
 				{
-					id = Integer.parseInt(ApplicationMainWindow.txtDeleteReminder.getText());//get id for delete
+					id = Integer.parseInt(ApplicationMainWindow.txtDeleteReminder.getText().trim());//get id for delete
 					client.sendMessage(48);//send server a signal to tell it what we are doing
 					client.sendSearchID(id);					//send the id
 				
@@ -2106,8 +2153,6 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "ShowTodaysReminder"
 			case "ShowTodaysReminder":
 				client.sendMessage(49);		//send server a signal to tell it what we are doing
-				Object[][] reminders;	    //2D array to hold reminders data
-				Reminder reminder;          //object to hold each retrieved customer
 				
 				//Get todays date
 				DateFormat dateFormatToday = new SimpleDateFormat("yyyy-MM-dd");
@@ -2118,23 +2163,23 @@ public class ClientEventHandler implements ActionListener
 				
 				if(remindersList.size() > 0)//if we have customers in the array list
 				{
-					reminders = new Object[remindersList.size()][5];//create array to hold them
+					searchData = new Object[remindersList.size()][5];//create array to hold them
 					
 					for(int row = 0; row < remindersList.size(); ++row)//loop over each record
 					{
 						reminder = remindersList.get(row); //get the object
 						
-						reminders[row][0] = reminder.getReminderID();				//pass it into an array
-						reminders[row][1] = reminder.getSubject();
-						reminders[row][2] = reminder.getDesc();
-						reminders[row][3] = reminder.getDate();
-						reminders[row][4] = reminder.getTime();
+						searchData[row][0] = reminder.getReminderID();				//pass it into an array
+						searchData[row][1] = reminder.getSubject();
+						searchData[row][2] = reminder.getDesc().trim();//there was whitespace being added so i remove it here
+						searchData[row][3] = reminder.getDate();
+						searchData[row][4] = reminder.getTime();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use reminders 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(reminders, reminderColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, reminderColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2164,65 +2209,72 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "ViewSearchReminder"
 			case "ViewSearchReminder":
 				client.sendMessage(50);		//send server a signal to tell it what we are doing
-				Object[][] searchReminders;	    //2D array to hold reminders data
-				Reminder searchReminderMember;          //object to hold each retrieved customer
 				
-				String date = ApplicationMainWindow.txtSearchReminder.getText();
+				String date = ApplicationMainWindow.txtSearchReminder.getText().trim(); //get search date and use .trim to remove whitespace
 				
 				client.sendMessage(date);//send todays date to the server (string)
-				remindersList = client.getReminderList();//retrieve array list from server of all the reminders
 				
-				if(remindersList.size() > 0)//if we have customers in the array list
-				{
-					searchReminders = new Object[remindersList.size()][5];//create array to hold them
-					
-					for(int row = 0; row < remindersList.size(); ++row)//loop over each record
-					{
-						searchReminderMember = remindersList.get(row); //get the object
-						
-						searchReminders[row][0] = searchReminderMember.getReminderID();				//pass it into an array
-						searchReminders[row][1] = searchReminderMember.getSubject();
-						searchReminders[row][2] = searchReminderMember.getDesc();
-						searchReminders[row][3] = searchReminderMember.getDate();
-						searchReminders[row][4] = searchReminderMember.getTime();
-					}
-					
-					@SuppressWarnings("serial")
-					//Create a table model that does not allow editing, which will use reminders 2D array
-					//as its data
-					DefaultTableModel model = new DefaultTableModel(searchReminders, reminderColumnNames) 
-				    {
-				        public boolean isCellEditable(int rowIndex, int mColIndex) {
-				          return false;
-				        }
-				    };
-				    
-				    //set the tables attributes
-				    ApplicationMainWindow.tblShowReminder = new JTable(model);
-				    ApplicationMainWindow.scr1Reminder = new JScrollPane(ApplicationMainWindow.tblShowReminder);
-				    ApplicationMainWindow.scr1Reminder.setLocation(100, 70);
-				    ApplicationMainWindow.scr1Reminder.setSize(1000, 400);
-				    ApplicationMainWindow.scr1Reminder.setVisible(true);
-				    ApplicationMainWindow.pnlReminderShowArea.add(ApplicationMainWindow.scr1Reminder);
-				    
-				  //output relevant dialog box
-					JOptionPane.showMessageDialog(null, "Reminders For "+ date +" Have been found" ,
-							"Valid Reminder Retreival", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else
+				serverSignal = client.getServerSignal();
+				
+				if(serverSignal == 0)
 				{
 					//output relevant dialog box
-					JOptionPane.showMessageDialog(null, "No Reminders For "+ date +" Have been found" ,
+					JOptionPane.showMessageDialog(null, "Invalid date format entered" ,
 							"Invalid Reminder Retreival", JOptionPane.ERROR_MESSAGE);
+				}
+				else if(serverSignal == 1)
+				{
+					remindersList = client.getReminderList();//retrieve array list from server of all the reminders
+					
+					if(remindersList.size() > 0)//if we have customers in the array list
+					{
+						searchData = new Object[remindersList.size()][5];//create array to hold them
+						
+						for(int row = 0; row < remindersList.size(); ++row)//loop over each record
+						{
+							reminder = remindersList.get(row); //get the object
+							
+							searchData[row][0] = reminder.getReminderID();				//pass it into an array
+							searchData[row][1] = reminder.getSubject();
+							searchData[row][2] = reminder.getDesc();
+							searchData[row][3] = reminder.getDate();
+							searchData[row][4] = reminder.getTime();
+						}
+						
+						@SuppressWarnings("serial")
+						//Create a table model that does not allow editing, which will use reminders 2D array
+						//as its data
+						DefaultTableModel model = new DefaultTableModel(searchData, reminderColumnNames) 
+					    {
+					        public boolean isCellEditable(int rowIndex, int mColIndex) {
+					          return false;
+					        }
+					    };
+					    
+					    //set the tables attributes
+					    ApplicationMainWindow.tblShowReminder = new JTable(model);
+					    ApplicationMainWindow.scr1Reminder = new JScrollPane(ApplicationMainWindow.tblShowReminder);
+					    ApplicationMainWindow.scr1Reminder.setLocation(100, 70);
+					    ApplicationMainWindow.scr1Reminder.setSize(1000, 400);
+					    ApplicationMainWindow.scr1Reminder.setVisible(true);
+					    ApplicationMainWindow.pnlReminderShowArea.add(ApplicationMainWindow.scr1Reminder);
+					    
+					  //output relevant dialog box
+						JOptionPane.showMessageDialog(null, "Reminders For "+ date +" Have been found" ,
+								"Valid Reminder Retreival", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "No Reminders For "+ date +" Have been found" ,
+								"Invalid Reminder Retreival", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 				break;
 				//SEARCH STAFF BY FIRST NAME (CLIENT SIDE)
 				//if action command is "DynamicSearchStaffFName"
-			case "DynamicSearchStaffFName":
-				Object[][] staffFName;	  //2D array to hold staff members data			
-				StaffMember memberFName;   //object to hold each retrieved staff member 
-				
-				String fName = ApplicationMainWindow.txtStaffFirstName.getText();	//get inputted first name
+			case "DynamicSearchStaffFName":	
+				String fName = ApplicationMainWindow.txtStaffFirstName.getText().trim();	//get inputted first name
 				client.sendMessage(51);		//send server a signal to tell it what we are doing
 				client.sendMessage(fName);	//send first name used in search to the server
 				
@@ -2230,26 +2282,26 @@ public class ClientEventHandler implements ActionListener
 				
 				if(members.size() > 0)//if we have members in the array list
 				{
-					staffFName = new Object[members.size()][7];//create array to hold them
+					searchData = new Object[members.size()][7];//create array to hold them
 					
 					//loop over entire list of staff members
 					for(int row = 0; row < members.size(); ++row)//loop over each record
 					{
-						memberFName = members.get(row); //get the object
+						staffMember = members.get(row); //get the object
 						
-						staffFName[row][0] = memberFName.getId();				//pass it into an array
-						staffFName[row][1] = memberFName.getFirstName();
-						staffFName[row][2] = memberFName.getLastName();
-						staffFName[row][3] = memberFName.getAddress();
-						staffFName[row][4] = memberFName.getPps();
-						staffFName[row][5] = memberFName.getSalary();
-						staffFName[row][6] = memberFName.getStaffType();
+						searchData[row][0] = staffMember.getId();				//pass it into an array
+						searchData[row][1] = staffMember.getFirstName();
+						searchData[row][2] = staffMember.getLastName();
+						searchData[row][3] = staffMember.getAddress();
+						searchData[row][4] = staffMember.getPps();
+						searchData[row][5] = staffMember.getSalary();
+						searchData[row][6] = staffMember.getStaffType();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will used staff members 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(staffFName, staffColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, staffColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2284,11 +2336,8 @@ public class ClientEventHandler implements ActionListener
 				break;
 				//SEARCH STAFF BY LAST NAME (CLIENT SIDE)
 				//if action command is "DynamicSearchStaffLName"
-			case "DynamicSearchStaffLName":
-				Object[][] staffLName;	  //2D array to hold staff members data			
-				StaffMember memberLName;   //object to hold each retrieved staff member //was 
-				
-				String LName = ApplicationMainWindow.txtStaffLastName.getText();	//get inputted last name
+			case "DynamicSearchStaffLName":	
+				String LName = ApplicationMainWindow.txtStaffLastName.getText().trim();	//get inputted last name
 				client.sendMessage(52);		//send server a signal to tell it what we are doing
 				client.sendMessage(LName);	//send last name used in search to the server
 				
@@ -2296,26 +2345,26 @@ public class ClientEventHandler implements ActionListener
 				
 				if(members.size() > 0)//if we have members in the array list
 				{
-					staffLName = new Object[members.size()][7];//create array to hold them
+					searchData = new Object[members.size()][7];//create array to hold them
 					
 					//loop over entire list of staff members
 					for(int row = 0; row < members.size(); ++row)//loop over each record
 					{
-						memberLName = members.get(row); //get the object
+						staffMember = members.get(row); //get the object
 						
-						staffLName[row][0] = memberLName.getId();				//pass it into an array
-						staffLName[row][1] = memberLName.getFirstName();
-						staffLName[row][2] = memberLName.getLastName();
-						staffLName[row][3] = memberLName.getAddress();
-						staffLName[row][4] = memberLName.getPps();
-						staffLName[row][5] = memberLName.getSalary();
-						staffLName[row][6] = memberLName.getStaffType();
+						searchData[row][0] = staffMember.getId();				//pass it into an array
+						searchData[row][1] = staffMember.getFirstName();
+						searchData[row][2] = staffMember.getLastName();
+						searchData[row][3] = staffMember.getAddress();
+						searchData[row][4] = staffMember.getPps();
+						searchData[row][5] = staffMember.getSalary();
+						searchData[row][6] = staffMember.getStaffType();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will used staff members 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(staffLName, staffColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, staffColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2324,8 +2373,8 @@ public class ClientEventHandler implements ActionListener
 				    
 				    //set the tables attributes
 				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
-				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
-				    tcm.getColumn(0).setPreferredWidth(10);
+				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();//getting handle on table columns
+				    tcm.getColumn(0).setPreferredWidth(10);//setting table column widths
 				    tcm.getColumn(1).setPreferredWidth(60);
 				    tcm.getColumn(2).setPreferredWidth(60);
 				    tcm.getColumn(3).setPreferredWidth(170);
@@ -2350,10 +2399,7 @@ public class ClientEventHandler implements ActionListener
 				break;
 				//SEARCH STAFF BY EMPLOYMENT TYPE (CLIENT SIDE)
 				//if action command is "DynamicSearchStaffEType"
-			case "DynamicSearchStaffEType":
-				Object[][] staffEmpType;	  //2D array to hold staff members data			
-				StaffMember memberEmpType;   //object to hold each retrieved staff member //was 
-				
+			case "DynamicSearchStaffEType":		
 				staffType = getStaffTypeChar(listHandler.getEmpSearchType());//get selected index of combo box and convert it to its staff char representation
 				String empType = String.valueOf(staffType); //convert character to string
 				client.sendMessage(53);		//send server a signal to tell it what we are doing
@@ -2363,26 +2409,26 @@ public class ClientEventHandler implements ActionListener
 				
 				if(members.size() > 0)//if we have members in the array list
 				{
-					staffEmpType = new Object[members.size()][7];//create array to hold them
+					searchData = new Object[members.size()][7];//create array to hold them
 					
 					//loop over entire list of staff members
 					for(int row = 0; row < members.size(); ++row)//loop over each record
 					{
-						memberEmpType = members.get(row); //get the object
+						staffMember = members.get(row); //get the object
 						
-						staffEmpType[row][0] = memberEmpType.getId();				//pass it into an array
-						staffEmpType[row][1] = memberEmpType.getFirstName();
-						staffEmpType[row][2] = memberEmpType.getLastName();
-						staffEmpType[row][3] = memberEmpType.getAddress();
-						staffEmpType[row][4] = memberEmpType.getPps();
-						staffEmpType[row][5] = memberEmpType.getSalary();
-						staffEmpType[row][6] = memberEmpType.getStaffType();
+						searchData[row][0] = staffMember.getId();				//pass it into an array
+						searchData[row][1] = staffMember.getFirstName();
+						searchData[row][2] = staffMember.getLastName();
+						searchData[row][3] = staffMember.getAddress();
+						searchData[row][4] = staffMember.getPps();
+						searchData[row][5] = staffMember.getSalary();
+						searchData[row][6] = staffMember.getStaffType();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will used staff members 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(staffEmpType, staffColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, staffColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2392,13 +2438,13 @@ public class ClientEventHandler implements ActionListener
 				    //set the tables attributes
 				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
 				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
-				    tcm.getColumn(0).setPreferredWidth(10);
+				    tcm.getColumn(0).setPreferredWidth(10);//setting table columns
 				    tcm.getColumn(1).setPreferredWidth(60);
 				    tcm.getColumn(2).setPreferredWidth(60);
 				    tcm.getColumn(3).setPreferredWidth(170);
 				    tcm.getColumn(4).setPreferredWidth(50);
 				    tcm.getColumn(5).setPreferredWidth(50);
-				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);//adding table to the scrollpane
 				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
 				    ApplicationMainWindow.scr1Results.setSize(800, 500);
 				    ApplicationMainWindow.scr1Results.setVisible(true);
@@ -2419,8 +2465,6 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "DynamicSearchRentHouse"
 			case "DynamicSearchRentHouse":
 				client.sendMessage(54);//send signal to server to indicate what we are doing
-				Object[][] rentHouses;	  //2D array to hold house data
-				House rentHouseMember;   //object to hold each retrieved house 
 				
 				houseType = getHouseSearchType(listHandler.getHouseSearchType()); 
 				sHouseType = String.valueOf(houseType); //convert character to string
@@ -2430,23 +2474,23 @@ public class ClientEventHandler implements ActionListener
 				
 				if(houseList.size() > 0)//if we have houses in the array list
 				{
-					rentHouses = new Object[houseList.size()][5];//create array to hold them
+					searchData = new Object[houseList.size()][5];//create array to hold them
 					
 					for(int row = 0; row < houseList.size(); ++row)//loop over each record
 					{
-						rentHouseMember = houseList.get(row); //get the object
+						house = houseList.get(row); //get the object
 						
-						rentHouses[row][0] = rentHouseMember.getId();				//pass it into an array
-						rentHouses[row][1] = rentHouseMember.getStreet();
-						rentHouses[row][2] = rentHouseMember.getTown();
-						rentHouses[row][3] = rentHouseMember.getCounty();
-						rentHouses[row][4] = rentHouseMember.getRentOrSale();
+						searchData[row][0] = house.getId();				//pass it into an array
+						searchData[row][1] = house.getStreet();
+						searchData[row][2] = house.getTown();
+						searchData[row][3] = house.getCounty();
+						searchData[row][4] = house.getRentOrSale();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use house (object) 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(rentHouses, houseColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, houseColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2476,8 +2520,6 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "DynamicSearchBuyHouse"
 			case "DynamicSearchBuyHouse":
 				client.sendMessage(55);//send signal to server to indicate what we are doing
-				Object[][] buyHouses;	  //2D array to hold house data
-				House buyHouseMember;   //object to hold each retrieved house 
 				
 				houseType = getHouseSearchType(listHandler.getHouseSearchType()); //one method gets the int, the other converts it to the char it represents
 				sHouseType = String.valueOf(houseType); //convert character to string
@@ -2487,23 +2529,23 @@ public class ClientEventHandler implements ActionListener
 				
 				if(houseList.size() > 0)//if we have houses in the array list
 				{
-					buyHouses = new Object[houseList.size()][5];//create array to hold them
+					searchData = new Object[houseList.size()][5];//create array to hold them
 					
 					for(int row = 0; row < houseList.size(); ++row)//loop over each record
 					{
-						buyHouseMember = houseList.get(row); //get the object
+						house = houseList.get(row); //get the object
 						
-						buyHouses[row][0] = buyHouseMember.getId();				//pass it into an array
-						buyHouses[row][1] = buyHouseMember.getStreet();
-						buyHouses[row][2] = buyHouseMember.getTown();
-						buyHouses[row][3] = buyHouseMember.getCounty();
-						buyHouses[row][4] = buyHouseMember.getRentOrSale();
+						searchData[row][0] = house.getId();				//pass it into an array
+						searchData[row][1] = house.getStreet();
+						searchData[row][2] = house.getTown();
+						searchData[row][3] = house.getCounty();
+						searchData[row][4] = house.getRentOrSale();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use house (object) 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(buyHouses, houseColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, houseColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2512,7 +2554,7 @@ public class ClientEventHandler implements ActionListener
 				    
 				    //set the tables attributes
 				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
-				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);//add table to scrollpane
 				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
 				    ApplicationMainWindow.scr1Results.setSize(800, 500);
 				    ApplicationMainWindow.scr1Results.setVisible(true);
@@ -2533,33 +2575,31 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "DynamicSearchHouseTown"
 			case "DynamicSearchHouseTown":
 				client.sendMessage(56);//send signal to server to indicate what we are doing
-				Object[][] townHouses;	  //2D array to hold house data
-				House townHouseMember;   //object to hold each retrieved house 
 				
-				String town = ApplicationMainWindow.txtHouseTown.getText(); //get town name that was inputted
+				String town = ApplicationMainWindow.txtHouseTown.getText().trim(); //get town name that was inputted, use .trim to remove whitespace
 				client.sendMessage(town);		//send town name to the server
 				
 				houseList = client.getHouseList();	//retrieve array list from server of all the houses
 				
 				if(houseList.size() > 0)//if we have houses in the array list
 				{
-					townHouses = new Object[houseList.size()][5];//create array to hold them
+					searchData = new Object[houseList.size()][5];//create array to hold them
 					
 					for(int row = 0; row < houseList.size(); ++row)//loop over each record
 					{
-						townHouseMember = houseList.get(row); //get the object
+						house = houseList.get(row); //get the object
 						
-						townHouses[row][0] = townHouseMember.getId();				//pass it into an array
-						townHouses[row][1] = townHouseMember.getStreet();
-						townHouses[row][2] = townHouseMember.getTown();
-						townHouses[row][3] = townHouseMember.getCounty();
-						townHouses[row][4] = townHouseMember.getRentOrSale();
+						searchData[row][0] = house.getId();				//pass it into an array
+						searchData[row][1] = house.getStreet();
+						searchData[row][2] = house.getTown();
+						searchData[row][3] = house.getCounty();
+						searchData[row][4] = house.getRentOrSale();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use house (object) 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(townHouses, houseColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, houseColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2589,33 +2629,32 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "DynamicSearchHouseTown"
 			case "DynamicSearchHouseCounty":
 				client.sendMessage(57);//send signal to server to indicate what we are doing
-				Object[][] countyHouses;	  //2D array to hold house data
-				House countyHouseMember;   //object to hold each retrieved house 
 				
-				county = ApplicationMainWindow.txtHouseCounty.getText(); //get county name that was inputted
+				//.trim removes whitespace
+				county = ApplicationMainWindow.txtHouseCounty.getText().trim(); //get county name that was inputted
 				client.sendMessage(county);		//send county name to the server
 				
 				houseList = client.getHouseList();	//retrieve array list from server of all the houses
 				
 				if(houseList.size() > 0)//if we have houses in the array list
 				{
-					countyHouses = new Object[houseList.size()][5];//create array to hold them
+					searchData = new Object[houseList.size()][5];//create array to hold them
 					
 					for(int row = 0; row < houseList.size(); ++row)//loop over each record
 					{
-						countyHouseMember = houseList.get(row); //get the object
+						house = houseList.get(row); //get the object
 						
-						countyHouses[row][0] = countyHouseMember.getId();				//pass it into an array
-						countyHouses[row][1] = countyHouseMember.getStreet();
-						countyHouses[row][2] = countyHouseMember.getTown();
-						countyHouses[row][3] = countyHouseMember.getCounty();
-						countyHouses[row][4] = countyHouseMember.getRentOrSale();
+						searchData[row][0] = house.getId();				//pass it into an array
+						searchData[row][1] = house.getStreet();
+						searchData[row][2] = house.getTown();
+						searchData[row][3] = house.getCounty();
+						searchData[row][4] = house.getRentOrSale();
 					}
 					
 					@SuppressWarnings("serial")
 					//Create a table model that does not allow editing, which will use house (object) 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(countyHouses, houseColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, houseColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2643,35 +2682,33 @@ public class ClientEventHandler implements ActionListener
 				break;
 				//SEARCH CUSTOMER BY FIRST NAME (CLIENT SIDE)
 				//if action command is "DynamicSearchCustFName"
-			case "DynamicSearchCustFName":
-				Object[][] customersFName;	  //2D array to hold customers data			
-				Customer customerFName;   //object to hold each retrieved customer
+			case "DynamicSearchCustFName":		
 				
-				String custFName = ApplicationMainWindow.txtCustFName.getText();	//get inputted first name
+				String custFName = ApplicationMainWindow.txtCustFName.getText().trim();	//get inputted first name
 				client.sendMessage(58);		//send server a signal to tell it what we are doing
 				client.sendMessage(custFName);	//send first name used in search to the server
 				
 				customersList = client.getCustomerList();//retrieve array list from server of all the customers
 				
-				if(customersList.size() > 0)//if we have members in the array list
+				if(customersList.size() > 0)//if we have customers in the array list
 				{
-					customersFName = new Object[customersList.size()][7];//create array to hold them
+					searchData = new Object[customersList.size()][7];//create array to hold them
 					
 					//loop over entire list of customers
 					for(int row = 0; row < customersList.size(); ++row)//loop over each record
 					{
-						customerFName = customersList.get(row); //get the object
+						customer = customersList.get(row); //get the object
 						
-						customersFName[row][0] = customerFName.getCustID();			//pass it into an array
-						customersFName[row][1] = customerFName.getfName();
-						customersFName[row][2] = customerFName.getlName();
-						customersFName[row][3] = customerFName.getAddress();
+						searchData[row][0] = customer.getCustID();			//pass it into an array
+						searchData[row][1] = customer.getfName();
+						searchData[row][2] = customer.getlName();
+						searchData[row][3] = customer.getAddress();
 					}
 					
 					@SuppressWarnings("serial")
-					//Create a table model that does not allow editing, which will used staff members 2D array
+					//Create a table model that does not allow editing, which will use customers 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(customersFName, customerColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, customerColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2699,35 +2736,33 @@ public class ClientEventHandler implements ActionListener
 				break;
 				//SEARCH CUSTOMER BY LAST NAME (CLIENT SIDE)
 				//if action command is "DynamicSearchCustFName"
-			case "DynamicSearchCustLName":
-				Object[][] customersLName;	  //2D array to hold customers data			
-				Customer customerLName;   //object to hold each retrieved customer		
+			case "DynamicSearchCustLName":			
 				
-				String custLName = ApplicationMainWindow.txtCustLName.getText();	//get inputted last name
+				String custLName = ApplicationMainWindow.txtCustLName.getText().trim();	//get inputted last name
 				client.sendMessage(59);		//send server a signal to tell it what we are doing
 				client.sendMessage(custLName);	//send last name used in search to the server
 				
 				customersList = client.getCustomerList();//retrieve array list from server of all the customers
 				
-				if(customersList.size() > 0)//if we have members in the array list
+				if(customersList.size() > 0)//if we have customers in the array list
 				{
-					customersLName = new Object[customersList.size()][7];//create array to hold them
+					searchData = new Object[customersList.size()][7];//create array to hold them
 					
 					//loop over entire list of customers
 					for(int row = 0; row < customersList.size(); ++row)//loop over each record
 					{
-						customerLName = customersList.get(row); //get the object
+						customer = customersList.get(row); //get the object
 						
-						customersLName[row][0] = customerLName.getCustID();			//pass it into an array
-						customersLName[row][1] = customerLName.getfName();
-						customersLName[row][2] = customerLName.getlName();
-						customersLName[row][3] = customerLName.getAddress();
+						searchData[row][0] = customer.getCustID();			//pass it into an array
+						searchData[row][1] = customer.getfName();
+						searchData[row][2] = customer.getlName();
+						searchData[row][3] = customer.getAddress();
 					}
 					
 					@SuppressWarnings("serial")
-					//Create a table model that does not allow editing, which will used staff members 2D array
+					//Create a table model that does not allow editing, which will use customer 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(customersLName, customerColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, customerColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2755,11 +2790,9 @@ public class ClientEventHandler implements ActionListener
 				break;
 				//SEARCH CUSTOMER BY ADDRESS (CLIENT SIDE)
 				//if action command is "DynamicSearchCustFName"
-			case "DynamicSearchCustAddress":
-				Object[][] customersAddress;	  //2D array to hold customers data			
-				Customer customerAddress;   //object to hold each retrieved customer		
+			case "DynamicSearchCustAddress":			
 				
-				String custAddress = ApplicationMainWindow.txtCustAddress.getText();	//get inputted address
+				String custAddress = ApplicationMainWindow.txtCustAddress.getText().trim();	//get inputted address using .trim for whitespace
 				client.sendMessage(60);		//send server a signal to tell it what we are doing
 				client.sendMessage(custAddress);	//send address used in search to the server
 				
@@ -2767,23 +2800,23 @@ public class ClientEventHandler implements ActionListener
 				
 				if(customersList.size() > 0)//if we have members in the array list
 				{
-					customersAddress = new Object[customersList.size()][7];//create array to hold them
+					searchData = new Object[customersList.size()][7];//create array to hold them
 					
 					//loop over entire list of customers
 					for(int row = 0; row < customersList.size(); ++row)//loop over each record
 					{
-						customerAddress = customersList.get(row); //get the object
+						customer = customersList.get(row); //get the object
 						
-						customersAddress[row][0] = customerAddress.getCustID();			//pass it into an array
-						customersAddress[row][1] = customerAddress.getfName();
-						customersAddress[row][2] = customerAddress.getlName();
-						customersAddress[row][3] = customerAddress.getAddress();
+						searchData[row][0] = customer.getCustID();			//pass it into an array
+						searchData[row][1] = customer.getfName();
+						searchData[row][2] = customer.getlName();
+						searchData[row][3] = customer.getAddress();
 					}
 					
 					@SuppressWarnings("serial")
-					//Create a table model that does not allow editing, which will used staff members 2D array
+					//Create a table model that does not allow editing, which will use customers 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(customersAddress, customerColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, customerColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -2812,11 +2845,8 @@ public class ClientEventHandler implements ActionListener
 				//SEARCH FOR BUY TRANSACTIONS IN A CERTAIN COUNTY (CLIENT SIDE)
 				//if action command is "DynamicSearchBTransCounty"
 			case "DynamicSearchBTransCounty":		
-				SellableHouse sHouseCounty;   //object to hold each retrieved sellable house (transaction data)
-				House houseCounty;
-				
 				client.sendMessage(61);
-				String county = ApplicationMainWindow.txtTransBuyCounty.getText();
+				county = ApplicationMainWindow.txtTransBuyCounty.getText().trim();//get county name and remove any whitespace
 				client.sendMessage(county);
 				
 				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
@@ -2824,28 +2854,28 @@ public class ClientEventHandler implements ActionListener
 				estateAgentIDs = client.getIDList();//retrieve array list of agent ids from the server
 				custIDs = client.getIDList();//retrieve array list of customer ids from the server
 				
-				if(sHouseList.size() > 0)//if we have members in the array lists
+				if(sHouseList.size() > 0)//if we have sell transactions in the array lists
 				{
 					searchData = new Object[sHouseList.size()][8];//create array to hold them
 					
 					//loop over entire lists of data
 					for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
 					{
-						sHouseCounty = sHouseList.get(row); //get the objects
-						houseCounty = houseList.get(row);
+						sHouse = sHouseList.get(row); //get the objects
+						house = houseList.get(row);
 						
-						searchData[row][0] = sHouseCounty.getId();					//pass them into an array
-						searchData[row][1] = sHouseCounty.getCost();
+						searchData[row][0] = sHouse.getId();					//pass them into an array
+						searchData[row][1] = sHouse.getCost();
 						searchData[row][2] = estateAgentIDs.get(row);
 						searchData[row][3] = custIDs.get(row);	
-						searchData[row][4] = houseCounty.getId();
-						searchData[row][5] = houseCounty.getStreet();
-						searchData[row][6] = houseCounty.getTown();
-						searchData[row][7] = houseCounty.getCounty();
+						searchData[row][4] = house.getId();
+						searchData[row][5] = house.getStreet();
+						searchData[row][6] = house.getTown();
+						searchData[row][7] = house.getCounty();
 					}
 					
 					@SuppressWarnings("serial")
-					//Create a table model that does not allow editing, which will used staff members 2D array
+					//Create a table model that does not allow editing, which will use 2D array
 					//as its data
 					DefaultTableModel model = new DefaultTableModel(searchData, sellTransCountyColumnNames) 
 				    {
@@ -2877,12 +2907,11 @@ public class ClientEventHandler implements ActionListener
 				//if action command is "DynamicSearchBTransCost"
 			case "DynamicSearchBTransCost":
 				client.sendMessage(62);
-				SellableHouse sHouseCost;
 				isValidOperator = false;
 				isDouble = false;
 				
-				String costUnedited = ApplicationMainWindow.txtTransBuyCost.getText();//get inputted value eg =100000
-				String operator = costUnedited.substring(0, 1);//get the operator
+				String costUnedited = ApplicationMainWindow.txtTransBuyCost.getText().trim();//get inputted value eg =100000
+				operator = costUnedited.substring(0, 1);//get the operator
 				String cost = costUnedited.substring(1);//get the number after the operator
 				
 				//make sure the user has entered a correct operator as the first character
@@ -2914,9 +2943,9 @@ public class ClientEventHandler implements ActionListener
 						{
 							//add each recod to 2D array
 							searchData[row][0] = buyIDs.get(row);
-							sHouseCost = sHouseList.get(row);
-							searchData[row][1] = sHouseCost.getId();
-							searchData[row][2] = sHouseCost.getCost();
+							sHouse = sHouseList.get(row);
+							searchData[row][1] = sHouse.getId();
+							searchData[row][2] = sHouse.getCost();
 							searchData[row][3] = estateAgentIDs.get(row);
 							searchData[row][4] = custIDs.get(row);
 						}
@@ -2960,117 +2989,196 @@ public class ClientEventHandler implements ActionListener
 				//SEARCH FOR BUY TRANSACTIONS INVOLVING A CERTAIN CUSTOMER (CLIENT SIDE)
 				//if action command is "DynamicSearchBTransCustomer"
 			case "DynamicSearchBTransCustomer":
-				SellableHouse sHouseCustomer;   //object to hold each retrieved sellable house (transaction data)
-				Customer associatedCustomer;	//object to hold associated customer
-				client.sendMessage(63);
-				
-				id = Integer.parseInt(ApplicationMainWindow.txtTransBuyCustomer.getText());
-				
-				client.sendMessage(id);
-				
-				buyIDs = client.getIDList();
-				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
-				customersList = client.getCustomerList();	//retrieve array list from server of all the houses
-				estateAgentIDs = client.getIDList();//retrieve array list of agent ids from the server
-				
-				if(sHouseList.size() > 0)//if we have members in the array lists
+				try
 				{
-					searchData = new Object[sHouseList.size()][8];//create array to hold them
-					
-					//loop over entire lists of data
-					for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+					id = Integer.parseInt(ApplicationMainWindow.txtTransBuyCustomer.getText().trim());//get customer id and remove whitespace with .trim
+					client.sendMessage(63);
+					client.sendMessage(id);
+				
+					buyIDs = client.getIDList();				//get list of buy ids
+					sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
+					customersList = client.getCustomerList();	//retrieve array list from server of all the houses
+					estateAgentIDs = client.getIDList();//retrieve array list of agent ids from the server
+				
+					if(sHouseList.size() > 0)//if we have sell transactions in the array lists
 					{
-						sHouseCustomer = sHouseList.get(row); //get the objects
-						associatedCustomer = customersList.get(row);
-						
-						searchData[row][0] = buyIDs.get(row);					//pass them into an array
-						searchData[row][1] = sHouseCustomer.getId();
-						searchData[row][2] = sHouseCustomer.getCost();
-						searchData[row][3] = estateAgentIDs.get(row);	
-						searchData[row][4] = associatedCustomer.getCustID();
-						searchData[row][5] = associatedCustomer.getfName();
-						searchData[row][6] = associatedCustomer.getlName();
-						searchData[row][7] = associatedCustomer.getAddress();
-					}
+						searchData = new Object[sHouseList.size()][8];//create array to hold them
 					
-					@SuppressWarnings("serial")
-					//Create a table model that does not allow editing, which will used staff members 2D array
-					//as its data
-					DefaultTableModel model = new DefaultTableModel(searchData, sellTransCustColumnNames) 
-				    {
-				        public boolean isCellEditable(int rowIndex, int mColIndex) {
-				          return false;
-				        }
-				    };
+						//loop over entire lists of data
+						for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+						{
+							sHouse = sHouseList.get(row); //get the objects
+							customer = customersList.get(row);
+						
+							searchData[row][0] = buyIDs.get(row);					//pass them into an array
+							searchData[row][1] = sHouse.getId();
+							searchData[row][2] = sHouse.getCost();
+							searchData[row][3] = estateAgentIDs.get(row);	
+							searchData[row][4] = customer.getCustID();
+							searchData[row][5] = customer.getfName();
+							searchData[row][6] = customer.getlName();
+							searchData[row][7] = customer.getAddress();
+						}
+					
+						@SuppressWarnings("serial")
+						//Create a table model that does not allow editing, which will use 2D array
+						//as its data
+						DefaultTableModel model = new DefaultTableModel(searchData, sellTransCustColumnNames) 
+						{
+							public boolean isCellEditable(int rowIndex, int mColIndex) {
+								return false;
+							}
+						};
 				    
-				    //set the tables attributes
-				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
-				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
-				    tcm.getColumn(0).setPreferredWidth(10);
-				    tcm.getColumn(1).setPreferredWidth(10);
-				    tcm.getColumn(2).setPreferredWidth(10);
-				    tcm.getColumn(3).setPreferredWidth(10);
-				    tcm.getColumn(4).setPreferredWidth(10);
-				    tcm.getColumn(5).setPreferredWidth(20);
-				    tcm.getColumn(6).setPreferredWidth(20);
-				    tcm.getColumn(7).setPreferredWidth(170);
-				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
-				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
-				    ApplicationMainWindow.scr1Results.setSize(800, 500);
-				    ApplicationMainWindow.scr1Results.setVisible(true);
-				    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+						//set the tables attributes
+						ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+						TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();//get handle on table columns
+						tcm.getColumn(0).setPreferredWidth(10);//setting column widths
+						tcm.getColumn(1).setPreferredWidth(10);
+						tcm.getColumn(2).setPreferredWidth(10);
+						tcm.getColumn(3).setPreferredWidth(10);
+						tcm.getColumn(4).setPreferredWidth(10);
+						tcm.getColumn(5).setPreferredWidth(20);
+						tcm.getColumn(6).setPreferredWidth(20);
+						tcm.getColumn(7).setPreferredWidth(170);
+						ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+						ApplicationMainWindow.scr1Results.setLocation(350, 70);
+						ApplicationMainWindow.scr1Results.setSize(800, 500);
+						ApplicationMainWindow.scr1Results.setVisible(true);
+						ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
 				    
-				  //output relevant dialog box
-					JOptionPane.showMessageDialog(null, "Information Has been found" ,
-							"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "Information Has been found" ,
+								"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+								"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+					}
 				}
-				else
+				catch(NumberFormatException e)
 				{
 					//output relevant dialog box
-					JOptionPane.showMessageDialog(null, "No Information Have been found" ,
-							"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Invalid Entry, customer id must be a number" ,
+							"Invalid Input Data", JOptionPane.ERROR_MESSAGE);
 				}
 				break;
 				//SEARCH FOR BUY TRANSACTIONS INVOLVING A CERTAIN ESTATE AGENT(CLIENT SIDE)
 				//if action command is "DynamicSearchBTransEAgent"
 			case "DynamicSearchBTransEAgent":
-				SellableHouse sHouseAgent;   //object to hold each retrieved sellable house (transaction data)
-				StaffMember associatedAgent;			//object to hold associated estate agent
-				client.sendMessage(64);
-				
-				id = Integer.parseInt(ApplicationMainWindow.txtTransBuyEstateAgent.getText());
-				
-				client.sendMessage(id);
-				
-				buyIDs = client.getIDList();
-				sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
-				custIDs = client.getIDList();	//retrieve array list from server of all the customer ids
-				members = client.getStaffMemberList();  //retrieve array list of staff members from the server
-				
-				if(sHouseList.size() > 0)//if we have members in the array lists
+				try
 				{
-					searchData = new Object[sHouseList.size()][8];//create array to hold them
+					id = Integer.parseInt(ApplicationMainWindow.txtTransBuyEstateAgent.getText().trim());//remove whitespace
+				
+					client.sendMessage(64);//send message to server to indicate what we are doing
+					client.sendMessage(id);
+				
+					buyIDs = client.getIDList();
+					sHouseList = client.getSellableHouseList();	//retrieve array list from server of all the sell house transactions
+					custIDs = client.getIDList();	//retrieve array list from server of all the customer ids
+					members = client.getStaffMemberList();  //retrieve array list of staff members from the server
+				
+					if(sHouseList.size() > 0)//if we have members in the array lists
+					{
+						searchData = new Object[sHouseList.size()][8];//create array to hold them
+					
+						//loop over entire lists of data
+						for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+						{
+							sHouse = sHouseList.get(row); //get the objects
+							staffMember = members.get(row);
+						
+							searchData[row][0] = buyIDs.get(row);					//pass them into an array
+							searchData[row][1] = sHouse.getId();
+							searchData[row][2] = sHouse.getCost();
+							searchData[row][3] = custIDs.get(row);	
+							searchData[row][4] = staffMember.getId();
+							searchData[row][5] = staffMember.getFirstName();
+							searchData[row][6] = staffMember.getLastName();
+							searchData[row][7] = staffMember.getAddress();
+						}
+					
+						@SuppressWarnings("serial")
+						//Create a table model that does not allow editing, which will use 2D array
+						//as its data
+						DefaultTableModel model = new DefaultTableModel(searchData, sellTransAgentColumnNames) 
+						{
+							public boolean isCellEditable(int rowIndex, int mColIndex) {
+								return false;
+							}
+						};
+				    
+						//set the tables attributes
+						ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+						TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
+						tcm.getColumn(0).setPreferredWidth(10);//set column widths
+						tcm.getColumn(1).setPreferredWidth(10);
+						tcm.getColumn(2).setPreferredWidth(10);
+						tcm.getColumn(3).setPreferredWidth(10);
+						tcm.getColumn(4).setPreferredWidth(10);
+						tcm.getColumn(5).setPreferredWidth(20);
+						tcm.getColumn(6).setPreferredWidth(20);
+						tcm.getColumn(7).setPreferredWidth(170);
+						ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);//add table to a scrollpane
+						ApplicationMainWindow.scr1Results.setLocation(350, 70);
+						ApplicationMainWindow.scr1Results.setSize(800, 500);
+						ApplicationMainWindow.scr1Results.setVisible(true);
+						ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+				    
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "Information Has been found" ,
+								"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+								"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				catch(NumberFormatException e)
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Invalid Entry, agent id must be a number" ,
+							"Invalid Input Data", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR RENT TRANSACTIONS IN A CERTAIN COUNTY (CLIENT SIDE)
+				//if action command is "DynamicSearchRTransCounty"
+			case "DynamicSearchRTransCounty":		
+				client.sendMessage(65);
+				county = ApplicationMainWindow.txtTransRentCounty.getText().trim();//get county name and remove any whitespace
+				client.sendMessage(county);
+				
+				rHouseList = client.getRentableHouseList();	//retrieve array list from server of all the rent house transactions
+				houseList = client.getHouseList();	//retrieve array list from server of all the houses
+				
+				if(rHouseList.size() > 0)//if we have rent transactions in the array lists
+				{
+					searchData = new Object[rHouseList.size()][8];//create array to hold them
 					
 					//loop over entire lists of data
-					for(int row = 0; row < sHouseList.size(); ++row)//loop over each record
+					for(int row = 0; row < rHouseList.size(); ++row)//loop over each record
 					{
-						sHouseAgent = sHouseList.get(row); //get the objects
-						associatedAgent = members.get(row);
+						rHouse = rHouseList.get(row); //get the objects
+						house = houseList.get(row);
 						
-						searchData[row][0] = buyIDs.get(row);					//pass them into an array
-						searchData[row][1] = sHouseAgent.getId();
-						searchData[row][2] = sHouseAgent.getCost();
-						searchData[row][3] = custIDs.get(row);	
-						searchData[row][4] = associatedAgent.getId();
-						searchData[row][5] = associatedAgent.getFirstName();
-						searchData[row][6] = associatedAgent.getLastName();
-						searchData[row][7] = associatedAgent.getAddress();
+						searchData[row][0] = rHouse.getId();					//pass them into an array
+						searchData[row][1] = rHouse.getFromDate();
+						searchData[row][2] = rHouse.getToDate();
+						searchData[row][3] = rHouse.getRate();
+						searchData[row][4] = house.getId();
+						searchData[row][5] = house.getStreet();
+						searchData[row][6] = house.getTown();
+						searchData[row][7] = house.getCounty();
 					}
 					
 					@SuppressWarnings("serial")
-					//Create a table model that does not allow editing, which will used staff members 2D array
+					//Create a table model that does not allow editing, which will use 2D array
 					//as its data
-					DefaultTableModel model = new DefaultTableModel(searchData, sellTransAgentColumnNames) 
+					DefaultTableModel model = new DefaultTableModel(searchData, rentTransCountyColumnNames) 
 				    {
 				        public boolean isCellEditable(int rowIndex, int mColIndex) {
 				          return false;
@@ -3079,16 +3187,7 @@ public class ClientEventHandler implements ActionListener
 				    
 				    //set the tables attributes
 				    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
-				    TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();
-				    tcm.getColumn(0).setPreferredWidth(10);
-				    tcm.getColumn(1).setPreferredWidth(10);
-				    tcm.getColumn(2).setPreferredWidth(10);
-				    tcm.getColumn(3).setPreferredWidth(10);
-				    tcm.getColumn(4).setPreferredWidth(10);
-				    tcm.getColumn(5).setPreferredWidth(20);
-				    tcm.getColumn(6).setPreferredWidth(20);
-				    tcm.getColumn(7).setPreferredWidth(170);
-				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+				    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);//adding table to the scrollpane
 				    ApplicationMainWindow.scr1Results.setLocation(350, 70);
 				    ApplicationMainWindow.scr1Results.setSize(800, 500);
 				    ApplicationMainWindow.scr1Results.setVisible(true);
@@ -3105,7 +3204,256 @@ public class ClientEventHandler implements ActionListener
 							"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
 				}
 				break;
-		}//end switch
+				//SEARCH FOR RENT TRANSACTIONS BY MONTHLY RATE (>, <, =) (CLIENT SIDE)
+				//if action command is "DynamicSearchRTransRentRate"
+			case "DynamicSearchRTransRentRate":
+				client.sendMessage(66);
+				isValidOperator = false;
+				isDouble = false;
+				
+				String rateUnedited = ApplicationMainWindow.txtTransRentRate.getText().trim();//get inputted value eg =100000
+				operator = rateUnedited.substring(0, 1);//get the operator
+				String rate = rateUnedited.substring(1);//get the number after the operator
+				
+				//make sure the user has entered a correct operator as the first character
+				if(operator.equalsIgnoreCase("=") || operator.equalsIgnoreCase("<") || operator.equalsIgnoreCase(">"))
+				{
+					isValidOperator = true;
+				}
+				
+				isDouble = isDouble(rate); //checks the remaining string after the operator is a double
+				
+				if(isValidOperator == true && isDouble == true)//if we have a double and the operator is okay
+				{
+					client.sendMessage(operator);//send them both to the server
+					client.sendMessage(rate);
+					
+					//get lists of data from the server
+				    rentIDs = client.getIDList();
+					rHouseList = client.getRentableHouseList();	//retrieve array list from server of all the rent house transactions
+					estateAgentIDs = client.getIDList();
+					custIDs = client.getIDList();
+					
+					//if we have members in the array lists
+					if(rHouseList.size() > 0 && rentIDs.size() > 0 && 
+							estateAgentIDs.size() > 0 && custIDs.size() > 0)
+					{
+						searchData = new Object[rHouseList.size()][7];//create array to hold them
+						
+						for(int row = 0; row < rHouseList.size(); ++row)//loop over each record
+						{
+							//add each recod to 2D array
+							searchData[row][0] = rentIDs.get(row);
+							rHouse = rHouseList.get(row);
+							searchData[row][1] = rHouse.getId();
+							searchData[row][2] = rHouse.getFromDate();
+							searchData[row][3] = rHouse.getToDate();
+							searchData[row][4] = rHouse.getRate();
+							searchData[row][5] = estateAgentIDs.get(row);
+							searchData[row][6] = custIDs.get(row);
+						}
+						
+						@SuppressWarnings("serial")
+						//Create a table model that does not allow editing, which will use house (object) 2D array
+						//as its data
+						DefaultTableModel model = new DefaultTableModel(searchData,  rentTransactionColumnNames) 
+					    {
+					        public boolean isCellEditable(int rowIndex, int mColIndex) {
+					          return false;
+					        }
+					    };
+					    
+					    //set the tables attributes
+					    ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+					    ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);
+					    ApplicationMainWindow.scr1Results.setLocation(350, 70);
+					    ApplicationMainWindow.scr1Results.setSize(800, 500);
+					    ApplicationMainWindow.scr1Results.setVisible(true);
+					    ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);
+					    
+					  //output relevant dialog box
+						JOptionPane.showMessageDialog(null, "Information Has been found" ,
+								"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+								"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				else
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "The data you have entered isnt correct - try again" ,
+							"Invalid Data", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR RENT TRANSACTIONS INVOLVING A CERTAIN CUSTOMER (CLIENT SIDE)
+				//if action command is "DynamicSearchRTransCustomer"
+			case "DynamicSearchRTransCustomer":
+				try
+				{
+					id = Integer.parseInt(ApplicationMainWindow.txtTransRentCustomer.getText().trim());//get search id and trim the whitespace
+				
+					client.sendMessage(67);
+					client.sendMessage(id);
+				
+					rentIDs = client.getIDList();
+					rHouseList = client.getRentableHouseList();	//retrieve array list from server of all the sell house transactions
+					customersList = client.getCustomerList();	//retrieve array list from server of all the houses
+				
+					if(rHouseList.size() > 0)//if we have rent transactions in the array lists
+					{
+						searchData = new Object[rHouseList.size()][9];//create array to hold them
+						
+						//loop over entire lists of data
+						for(int row = 0; row < rHouseList.size(); ++row)//loop over each record
+						{
+							rHouse = rHouseList.get(row); //get the objects
+							customer = customersList.get(row);
+						
+							searchData[row][0] = rentIDs.get(row);					//pass them into an array
+							searchData[row][1] = rHouse.getId();
+							searchData[row][2] = rHouse.getFromDate();
+							searchData[row][3] = rHouse.getToDate();
+							searchData[row][4] = rHouse.getRate();	
+							searchData[row][5] = customer.getCustID();
+							searchData[row][6] = customer.getfName();
+							searchData[row][7] = customer.getlName();
+							searchData[row][8] = customer.getAddress();
+						}
+					
+						@SuppressWarnings("serial")
+						//Create a table model that does not allow editing, which will used staff members 2D array
+						//as its data
+						DefaultTableModel model = new DefaultTableModel(searchData, rentTransCustColumnNames) 
+						{
+							public boolean isCellEditable(int rowIndex, int mColIndex) {
+								return false;
+							}
+						};
+				    
+						//set the tables attributes
+						ApplicationMainWindow.tblShowDynamicResult = new JTable(model);
+						TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();//get handle on table columns
+						tcm.getColumn(0).setPreferredWidth(5);//set column widths
+						tcm.getColumn(1).setPreferredWidth(5);
+						tcm.getColumn(2).setPreferredWidth(10);
+						tcm.getColumn(3).setPreferredWidth(10);
+						tcm.getColumn(4).setPreferredWidth(20);
+						tcm.getColumn(5).setPreferredWidth(20);
+						tcm.getColumn(6).setPreferredWidth(30);
+						tcm.getColumn(7).setPreferredWidth(30);
+						tcm.getColumn(8).setPreferredWidth(150);
+						ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);//add table to the scrollpane
+						ApplicationMainWindow.scr1Results.setLocation(350, 70);
+						ApplicationMainWindow.scr1Results.setSize(800, 500);
+						ApplicationMainWindow.scr1Results.setVisible(true);
+						ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);//add scrollpane to the panel
+				    
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "Information Has been found" ,
+								"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+								"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				catch(NumberFormatException e)
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Invalid Entry, customer id must be a number" ,
+							"Invalid Input Data", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+				//SEARCH FOR RENT TRANSACTIONS INVOLVING A CERTAIN ESTATE AGENT(CLIENT SIDE)
+				//if action command is "DynamicSearchBTransEAgent"
+			case "DynamicSearchRTransEAgent":
+				try
+				{
+					//RentableHouse rHouseAgent;   //object to hold each retrieved rentable house (transaction data)
+				
+					id = Integer.parseInt(ApplicationMainWindow.txtTransRentEstateAgent.getText().trim());//get search id
+				
+					client.sendMessage(68);
+					client.sendMessage(id);//send id used for search to the server
+				
+					rentIDs = client.getIDList();//get list of rent ids from the server
+					rHouseList = client.getRentableHouseList();	//retrieve array list from server of all the rent house transactions
+					members = client.getStaffMemberList();  //retrieve array list of staff members from the server
+				
+					if(rHouseList.size() > 0)//if we have rent transactions in the array lists
+					{
+						searchData = new Object[rHouseList.size()][9];//create array to hold them
+					
+						//loop over entire lists of data
+						for(int row = 0; row < rHouseList.size(); ++row)//loop over each record
+						{
+							rHouse = rHouseList.get(row); //get the objects
+							staffMember = members.get(row);
+							
+							searchData[row][0] = rentIDs.get(row);					//pass them into an array
+							searchData[row][1] = rHouse.getId();
+							searchData[row][2] = rHouse.getFromDate();
+							searchData[row][3] = rHouse.getToDate();
+							searchData[row][4] = rHouse.getRate();
+							searchData[row][5] = staffMember.getId();
+							searchData[row][6] = staffMember.getFirstName();
+							searchData[row][7] = staffMember.getLastName();
+							searchData[row][8] = staffMember.getAddress();
+						}
+					
+						@SuppressWarnings("serial")
+						//Create a table model that does not allow editing, which will used staff members 2D array
+						//as its data
+						DefaultTableModel model = new DefaultTableModel(searchData, rentTransAgentColumnNames) 
+						{
+							public boolean isCellEditable(int rowIndex, int mColIndex) {
+								return false;
+							}
+						};
+				    
+						//set the tables attributes
+						ApplicationMainWindow.tblShowDynamicResult = new JTable(model);//create table from the model specified
+						TableColumnModel tcm = ApplicationMainWindow.tblShowDynamicResult.getColumnModel();//get handle on columns
+						tcm.getColumn(0).setPreferredWidth(5);//set column widths
+						tcm.getColumn(1).setPreferredWidth(5);
+						tcm.getColumn(2).setPreferredWidth(20);
+						tcm.getColumn(3).setPreferredWidth(20);
+						tcm.getColumn(4).setPreferredWidth(20);
+						tcm.getColumn(5).setPreferredWidth(20);
+						tcm.getColumn(6).setPreferredWidth(30);
+						tcm.getColumn(7).setPreferredWidth(30);
+						tcm.getColumn(8).setPreferredWidth(110);
+						ApplicationMainWindow.scr1Results = new JScrollPane(ApplicationMainWindow.tblShowDynamicResult);//add table to the scrollpane
+						ApplicationMainWindow.scr1Results.setLocation(350, 70);//scrollpane attributes
+						ApplicationMainWindow.scr1Results.setSize(800, 500);
+						ApplicationMainWindow.scr1Results.setVisible(true);
+						ApplicationMainWindow.pnlDynamicSearch.add(ApplicationMainWindow.scr1Results);//add scrollpane to the panel
+				    
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "Information Has been found" ,
+								"Valid Retreival", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else
+					{
+						//output relevant dialog box
+						JOptionPane.showMessageDialog(null, "No Information Have been found" ,
+								"Invalid Retreival", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				catch(NumberFormatException e)
+				{
+					//output relevant dialog box
+					JOptionPane.showMessageDialog(null, "Invalid Entry, agent id must be a number" ,
+							"Invalid Input Data", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+			}//end switch
 	}//end actionPerformed()
 	
 	//returns the current client object (used in ApplicationMainWindow exit() method)

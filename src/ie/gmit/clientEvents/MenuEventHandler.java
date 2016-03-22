@@ -37,7 +37,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateUser.setVisible(false);
 				ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 				ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Staff.setVisible(false);
 				ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 				ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 				ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -67,7 +66,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Customer.setVisible(false);
 				ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 				ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 				ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -85,7 +83,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 				ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 				ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Reminder.setVisible(false);
 				ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 				ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 				ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -109,7 +106,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateUser.setVisible(false);
 				ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 				ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Staff.setVisible(false);
 				ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 				ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 				ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -139,7 +135,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Customer.setVisible(false);
 				ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 				ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 				ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -157,7 +152,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 				ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 				ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Reminder.setVisible(false);
 				ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 				ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 				ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -184,7 +178,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -214,7 +207,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -232,14 +224,12 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
 			ApplicationMainWindow.txtSearchReminder.setVisible(false);
 			ApplicationMainWindow.btnSearchForReminder.setVisible(false);
 			ApplicationMainWindow.pnlDynamicSearch.setVisible(false);
-			//make the update user panel and related controls visible
 			ApplicationMainWindow.pnlUpdateUser.setVisible(true);
 			ApplicationMainWindow.txtOldUsername.setText("");
 			ApplicationMainWindow.txtUpdatedUsername.setText("");
@@ -260,7 +250,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -290,7 +279,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -308,7 +296,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -336,7 +323,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlDeleteUser.setVisible(false);
 				ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 				ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Staff.setVisible(false);
 				ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 				ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 				ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -366,7 +352,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Customer.setVisible(false);
 				ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 				ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 				ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -384,7 +369,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 				ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 				ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Reminder.setVisible(false);
 				ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 				ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 				ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -408,7 +392,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlDeleteUser.setVisible(false);
 				ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 				ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Staff.setVisible(false);
 				ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 				ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 				ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -438,7 +421,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Customer.setVisible(false);
 				ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 				ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 				ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -456,7 +438,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 				ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 				ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Reminder.setVisible(false);
 				ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 				ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 				ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -482,7 +463,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlDeleteUser.setVisible(false); 
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -512,7 +492,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -529,7 +508,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -564,7 +542,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -594,7 +571,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -612,7 +588,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -662,7 +637,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Customer.setVisible(false);
 				ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 				ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 				ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -680,7 +654,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 				ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 				ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Reminder.setVisible(false);
 				ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 				ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 				ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -728,7 +701,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 				ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Customer.setVisible(false);
 				ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 				ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 				ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -746,7 +718,6 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 				ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 				ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-				ApplicationMainWindow.scr1Reminder.setVisible(false);
 				ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 				ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 				ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -761,8 +732,7 @@ public class MenuEventHandler implements ActionListener
 				ApplicationMainWindow.txtSearchStaffMember.setText("");
 				ApplicationMainWindow.lblViewStaffMember.setVisible(true);
 				ApplicationMainWindow.btnCancelShowAllStaff.setVisible(true);
-				ApplicationMainWindow.showAllStaff.setText("");
-				ApplicationMainWindow.scr1Staff.setVisible(true);
+				ApplicationMainWindow.scr1Staff.setVisible(false);//invisible until show button is pressed
 			}
 		}
 		else if(menuItem == ApplicationMainWindow.uploadFile)//if we pick upload file
@@ -777,7 +747,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -807,7 +776,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -825,7 +793,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -848,7 +815,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -878,7 +844,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -896,7 +861,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -921,7 +885,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffEdit.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -962,7 +925,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -980,7 +942,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1031,7 +992,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1049,7 +1009,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1073,7 +1032,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1102,7 +1060,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1120,7 +1077,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1143,7 +1099,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1172,7 +1127,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1190,7 +1144,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1216,7 +1169,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1246,7 +1198,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1263,7 +1214,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1296,7 +1246,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1325,7 +1274,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1343,7 +1291,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1366,7 +1313,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1396,7 +1342,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1414,7 +1359,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1429,8 +1373,7 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.txtSearchHouse.setText("");
 			ApplicationMainWindow.lblViewHouses.setVisible(true);
 			ApplicationMainWindow.btnCancelShowHouses.setVisible(true);
-			ApplicationMainWindow.showAllHouses.setText("");
-			ApplicationMainWindow.scr1House.setVisible(true);
+			ApplicationMainWindow.scr1House.setVisible(false);//invisible until show button is pressed
 		}
 		else if(menuItem == ApplicationMainWindow.addTransaction)//if we pick add a transaction
 		{
@@ -1444,7 +1387,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1474,7 +1416,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1492,7 +1433,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1547,7 +1487,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1577,7 +1516,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1595,7 +1533,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1626,7 +1563,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1656,7 +1592,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1673,7 +1608,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1744,7 +1678,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1774,7 +1707,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1792,7 +1724,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1801,8 +1732,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlDynamicSearch.setVisible(false);
 			//make the view transaction panel and related controls visible
 			ApplicationMainWindow.pnlViewTransaction.setVisible(true);
-			ApplicationMainWindow.scr1Transactions.setVisible(true);
-			ApplicationMainWindow.showAllTransactions.setText("");
 			ApplicationMainWindow.cmbTransactionViewOptions.setSelectedIndex(0);
 			ApplicationMainWindow.btnViewAllRentTrans.setVisible(false);
 			ApplicationMainWindow.lblViewTransactionRent.setVisible(false);
@@ -1814,6 +1743,7 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.txtSearchViewBuyTrans.setVisible(false);
 			ApplicationMainWindow.txtSearchViewBuyTrans.setText("");
 			ApplicationMainWindow.btnSearchBuyTrans.setVisible(false);
+			ApplicationMainWindow.scr1Transactions.setVisible(false);//invisible until show button is pressed
 		}
 		else if(menuItem == ApplicationMainWindow.addCustomer)//if we pick add customer
 		{
@@ -1827,7 +1757,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1857,7 +1786,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1875,7 +1803,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1900,7 +1827,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1930,7 +1856,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchCustomerEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -1948,7 +1873,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -1971,7 +1895,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -1998,7 +1921,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlAddCustomer.setVisible(false);
 			ApplicationMainWindow.pnlDeleteCustomer.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -2015,7 +1937,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -2047,7 +1968,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -2089,7 +2009,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -2098,14 +2017,13 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlDynamicSearch.setVisible(false);
 			//make the view customer panel and controls visible
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(true);
-			ApplicationMainWindow.scr1Customer.setVisible(true);
-			ApplicationMainWindow.showAllCustomers.setText("");
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(true);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(true);
 			ApplicationMainWindow.lblViewCustomer.setVisible(true);
 			ApplicationMainWindow.txtSearchCustomer.setVisible(true);
 			ApplicationMainWindow.btnSearchForCustomer.setVisible(true);
 			ApplicationMainWindow.txtSearchCustomer.setText("");
+			ApplicationMainWindow.scr1Customer.setVisible(false);//invisible until show button is pressed
 		}
 		else if(menuItem == ApplicationMainWindow.addReminder)//if we pick update
 		{
@@ -2119,7 +2037,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -2154,7 +2071,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnRefreshUpdateRentTrans.setVisible(false);
 			ApplicationMainWindow.btnRefreshCustEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -2167,7 +2083,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlUpdateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -2193,7 +2108,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -2228,7 +2142,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnRefreshUpdateRentTrans.setVisible(false);
 			ApplicationMainWindow.btnRefreshCustEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -2237,7 +2150,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateReminder.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -2270,7 +2182,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -2305,7 +2216,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnRefreshUpdateRentTrans.setVisible(false);
 			ApplicationMainWindow.btnRefreshCustEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -2318,7 +2228,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnRefreshReminderEdit.setVisible(false);
 			ApplicationMainWindow.txtSearchReminderEdit.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -2341,7 +2250,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -2376,7 +2284,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnRefreshUpdateRentTrans.setVisible(false);
 			ApplicationMainWindow.btnRefreshCustEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -2392,14 +2299,13 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlDynamicSearch.setVisible(false);
 			//make view reminder panel and controls visible
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(true);
-			ApplicationMainWindow.scr1Reminder.setVisible(true);
-			ApplicationMainWindow.showAllReminder.setText("");
 			ApplicationMainWindow.btnShowAllReminder.setVisible(true);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(true);
 			ApplicationMainWindow.lblViewReminder.setVisible(true);
 			ApplicationMainWindow.txtSearchReminder.setVisible(true);
 			ApplicationMainWindow.btnSearchForReminder.setVisible(true);
 			ApplicationMainWindow.txtSearchReminder.setText("");
+			ApplicationMainWindow.scr1Reminder.setVisible(false);//invisible until show button is pressed
 		}
 		else if(menuItem == ApplicationMainWindow.dynamicSearch)
 		{
@@ -2413,7 +2319,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.pnlCreateNewUser.setVisible(false);
 			ApplicationMainWindow.pnlDeleteStaffMember.setVisible(false);
 			ApplicationMainWindow.pnlStaffMemberShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Staff.setVisible(false);
 			ApplicationMainWindow.btnShowAllStaff.setVisible(false);
 			ApplicationMainWindow.btnSearchForStaff.setVisible(false);
 			ApplicationMainWindow.txtSearchStaffMember.setVisible(false);
@@ -2448,7 +2353,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnRefreshUpdateRentTrans.setVisible(false);
 			ApplicationMainWindow.btnRefreshCustEdit.setVisible(false);
 			ApplicationMainWindow.pnlCustomerShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Customer.setVisible(false);
 			ApplicationMainWindow.btnShowAllCustomers.setVisible(false);
 			ApplicationMainWindow.btnCancelShowCustomers.setVisible(false);
 			ApplicationMainWindow.lblViewCustomer.setVisible(false);
@@ -2462,7 +2366,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.txtSearchReminderEdit.setVisible(false);
 			ApplicationMainWindow.pnlDeleteReminder.setVisible(false);
 			ApplicationMainWindow.pnlReminderShowArea.setVisible(false);
-			ApplicationMainWindow.scr1Reminder.setVisible(false);
 			ApplicationMainWindow.btnShowAllReminder.setVisible(false);
 			ApplicationMainWindow.btnCancelShowReminder.setVisible(false);
 			ApplicationMainWindow.lblViewReminder.setVisible(false);
@@ -2470,7 +2373,6 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.btnSearchForReminder.setVisible(false);
 			//make dynamic search panel and controls visible some invisible until selected
 			ApplicationMainWindow.pnlDynamicSearch.setVisible(true);
-			ApplicationMainWindow.scr1Results.setVisible(true);
 			ApplicationMainWindow.lblSearchStaffType.setVisible(false);
 			ApplicationMainWindow.cmbDynamicStaffSearchType.setVisible(false);
 			ApplicationMainWindow.cmbDynamicStaffSearchType.setSelectedIndex(0);
@@ -2525,6 +2427,7 @@ public class MenuEventHandler implements ActionListener
 			ApplicationMainWindow.lblSearchTransRentEstateAgent.setVisible(false);
 			ApplicationMainWindow.txtTransRentEstateAgent.setVisible(false);
 			ApplicationMainWindow.btnDynamicSearchRentTransEAgent.setVisible(false);
+			ApplicationMainWindow.scr1Results.setVisible(false);//invisible until show button is pressed
 		}
 	}//end actionPerformed()
 }//end MenuEventHandler class
