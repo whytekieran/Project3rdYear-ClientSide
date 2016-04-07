@@ -268,13 +268,6 @@ public class ClientEventHandler implements ActionListener
 							"Valid User Authentication", JOptionPane.INFORMATION_MESSAGE);
 				}
 				break;
-				//EXIT THE PROGRAM (CLIENT SIDE)
-				//If the action command is exitProgram
-			case "exitProgram":
-				client.sendMessage(2);			//Send server a signal to indicate what we are doing
-				client.closeConnections();		//call the clients close connections method to close all connections
-	         	System.exit(0);					//Terminate the program
-				break;
 				//CREATE NEW USER (CLIENT SIDE)
 				//If the action command is CreateNewUser
 			case "CreateNewUser":

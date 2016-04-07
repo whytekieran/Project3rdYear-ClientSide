@@ -127,7 +127,7 @@ public class ApplicationMainWindow extends JFrame
 									cmbTransactionUpdateOptions, cmbTransactionViewOptions, cmbDynamicSearchEntities, cmbDynamicStaffSearchType,
 									cmbDynamicHouseSearchType, cmbDynamicTransactionSearchType, cmbDynamicCustomerSearchType, cmbStaffSearchEmpType,
 									cmbDynamicBuyTransactionSearchType, cmbDynamicRentTransactionSearchType;
-	private JButton btnEnterButton, btnExitButton, btnCreateUser, btnEndCreateUser, btnUpdateUser, btnEndUpdateUser,
+	private JButton btnEnterButton, btnCreateUser, btnEndCreateUser, btnUpdateUser, btnEndUpdateUser,
 					btnDeleteUser, btnCancelDeleteUser, btnCreateStaff, btnCancelCreateStaff, btnDeleteStaffMember,
 					btnCancelDeleteStaffMember, btnExitUpdateStaff, btnUploadFile, btnCancelUploadFile, btnViewFiles,
 					btnDownloadFile, btnCancelDownloadFile, btnCancelSendFiles, btnViewRemovableFiles, btnRemoveFile,
@@ -246,7 +246,7 @@ public class ApplicationMainWindow extends JFrame
 		
 		pnlAuthentication = new JPanel();						//create a panel
 		pnlAuthentication.setLayout(null);						//no layout specified
-		pnlAuthentication.setSize(500, 300);					//set size
+		pnlAuthentication.setSize(500, 275);					//set size
 		pnlAuthentication.setLocation(435, 150);				//location in the window
 		pnlAuthentication.setBackground(Color.black);			//background colour
 		
@@ -290,27 +290,16 @@ public class ApplicationMainWindow extends JFrame
 		pnlAuthentication.add(cmbStaffLoginOptions);					//add combo box to the panel
 		
 		//Create a button for user to submit his/her password and username 
-		btnEnterButton = new JButton("Enter");
+		btnEnterButton = new JButton("Login");
 	    btnEnterButton.setSize(170, 40);							//set size of the button
-	    btnEnterButton.setLocation(65, 250);						//set buttons location
+	    btnEnterButton.setLocation(165, 210);						//set buttons location was 65
 	    btnEnterButton.setFont(customFont2);						//set custom font for button
 	    btnEnterButton.setBackground(Color.decode("#BE81F7"));		//set button background colour
 	    btnEnterButton.setForeground(Color.decode("#4C0B5F"));		//set button foreground colour
 	    btnEnterButton.setActionCommand("enterAuthenticationInfo");	//action command to reference in event handler
 	    btnEnterButton.addActionListener(clientHandler);
 	    pnlAuthentication.add(btnEnterButton);				    	//add the button to the window
-	   
-	    //Create exit button allowing user to leave the program
-	    btnExitButton = new JButton("Exit");
-	    btnExitButton.setSize(175, 40);								//set size of the button
-	    btnExitButton.setLocation(255, 250);						//set buttons location on window
-	    btnExitButton.setFont(customFont2);							//set custom font for the button
-	    btnExitButton.setBackground(Color.decode("#BE81F7"));		//set button background colour
-	    btnExitButton.setForeground(Color.decode("#4C0B5F"));		//set button foreground colour
-	    btnExitButton.setActionCommand("exitProgram");				//action command to reference in event handler
-	    btnExitButton.addActionListener(clientHandler);
-	    pnlAuthentication.add(btnExitButton);						//add button the window
-	
+
 	    //Creating a titled, lined border
 	    title = BorderFactory.createTitledBorder(borderLine, "Authentication Window");
 	    title.setTitleJustification(TitledBorder.CENTER);
