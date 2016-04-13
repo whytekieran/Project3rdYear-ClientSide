@@ -912,23 +912,31 @@ public class ClientEventHandler implements ActionListener
 				//REMOVING A FILE FROM USERS ONLINE DIRECTORY (CLIENT SIDE)
 				//if action command is "RemoveFile"
 			case "RemoveFile":
-				client.sendMessage(19);//send server a signal to tell it what we are doing
-				
 				//Get name of file to remove from online directory and send to the server
 				fileRemove = ApplicationMainWindow.txtRemoveFile.getText().trim();
-				client.sendMessage(fileRemove);
 				
-				serverSignal = client.getServerSignal();//get server response
-				
-				if(serverSignal == 1)//success
+				if(fileRemove.equalsIgnoreCase("reminder.txt"))
 				{
-					JOptionPane.showMessageDialog(null, "File in your online directory has been deleted successfully" ,
-							"Valid File Deletion", JOptionPane.INFORMATION_MESSAGE);
-				}
-				else if(serverSignal == 0)//no success
-				{
-					JOptionPane.showMessageDialog(null, "File in your online directory hasnt been deleted - try again" ,
+					JOptionPane.showMessageDialog(null, "The File Reminder.txt is critical to the user and cant be deleted" ,
 							"Invalid File Deletion", JOptionPane.ERROR_MESSAGE);
+				}
+				else
+				{
+					client.sendMessage(19);//send server a signal to tell it what we are doing
+					client.sendMessage(fileRemove);
+				
+					serverSignal = client.getServerSignal();//get server response
+				
+					if(serverSignal == 1)//success
+					{
+						JOptionPane.showMessageDialog(null, "File in your online directory has been deleted successfully" ,
+								"Valid File Deletion", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else if(serverSignal == 0)//no success
+					{
+						JOptionPane.showMessageDialog(null, "File in your online directory hasnt been deleted - try again" ,
+								"Invalid File Deletion", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 				break;
 				//CREATING A NEW HOUSE, SENDING HOUSE DATA TO THE SERVER (CLIENT SIDE)
